@@ -11,13 +11,13 @@
   <div id="points"></div>
   <div id="products"></div>
   <script>
-    liff.init({ liffId: "2008129060-mO9azRD1" })
+    liff.init({ liffId: "2008129060-mO9azRD1" }) // 這裡填你的 LIFF ID
       .then(() => liff.getProfile())
       .then(profile => {
         document.getElementById('user').innerText = "你好，" + profile.displayName;
         // 用 userId 查詢 Google Sheets API
         const userId = profile.userId;
-        fetch(`https://script.google.com/macros/s/AKfycbzTydYK4bP8qKbW7sZ1yB0BVmVA7gVOu41AeTwkjUSrg4_zqvZ3kPPuO1a8ErfSUcjb/exec?userId=${userId}`)
+        fetch(`https://script.google.com/macros/s/AKfycbzTydYK4bP8qKbW7sZ1yB0BVmVA7gVOu41AeTwkjUSrg4_zqvZ3kPPuO1a8ErfSUcjb/exec?userId=${userId}`) // 這裡填你的 API 網址
           .then(res => res.json())
           .then(data => {
             document.getElementById('points').innerText = "你的點數：" + data.points;
