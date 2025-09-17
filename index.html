@@ -17,7 +17,7 @@
         document.getElementById('user').innerText = "你好，" + profile.displayName;
         // 用 userId 查詢 Google Sheets API
         const userId = profile.userId;
-        fetch(`https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjDYHxB63onuwg8CgVdBlpe4Ek4scj0sOdpSRdwd8RS-XYfTSsujsIdzXFu10m8IEWIBaOWMg8NiLKFIG92ERYtJshRIGMFqgug6tH25NQA_sYafoSQcs4raxlIUqLR6SVMvqzpCOa0ltBGVzWoC12tXUrOXYdG1f5T6WJS0qezZrYVcaN8YpfrGs8GLm47YZHPCG_JtJjIjTBW8BO-V4im3fpF_s4s_rqu_-m0mZF89gCZUuFFrIEowPcebSrcbZc3y4oKTlEsgwMjumNcpu4k0LVfdA&lib=MB_Zde0U7DwIpfp98Nohp6H-zIEpQ-sDt`)
+        fetch(`https://script.google.com/macros/s/AKfycbzTydYK4bP8qKbW7sZ1yB0BVmVA7gVOu41AeTwkjUSrg4_zqvZ3kPPuO1a8ErfSUcjb/exec?userId=${userId}`)
           .then(res => res.json())
           .then(data => {
             document.getElementById('points').innerText = "你的點數：" + data.points;
