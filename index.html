@@ -14,15 +14,47 @@
     .user-id { font-size: 0.92em; color: #aaa; }
     .student-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px;}
     select#studentSel { padding: 5px 10px; border-radius: 6px; border: 1px solid #d1d5db; min-width: 110px;}
-    #addStudentBtn { background: #6366f1; color: #fff; border: none; border-radius: 6px; padding: 6px 13px; font-size: 1em; cursor: pointer; transition: background 0.2s;}
-    #addStudentBtn:hover { background: #818cf8; }
-    .modal-bg { display:none; position:fixed; z-index:30; left:0; top:0; width:100vw; height:100vh; background:rgba(80,90,120,0.18);}
-    .modal { position:fixed; left:50%; top:50%; transform:translate(-50%,-54%); background:#fff; border-radius:14px; box-shadow:0 2px 12px #818cf855; min-width:260px; padding:28px 24px 22px 24px; z-index:31;}
+    #addStudentBtn {
+      background: #6366f1;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 13px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.14s;
+      box-shadow: 0 1px 8px #a5b4fc33;
+    }
+    #addStudentBtn:hover { background: #818cf8; transform: scale(1.06);}
+    .modal-bg {
+      display:none;
+      position:fixed;
+      z-index:30;
+      left:0; top:0; width:100vw; height:100vh;
+      background:rgba(80,90,120,0.18);
+      animation: fadeIn 0.33s;
+    }
+    .modal {
+      display:none;
+      position:fixed;
+      left:50%; top:50%;
+      transform:translate(-50%,-54%);
+      background:#fff;
+      border-radius:14px;
+      box-shadow:0 2px 12px #818cf855;
+      min-width:260px;
+      padding:28px 24px 22px 24px;
+      z-index:31;
+      opacity:0;
+      animation: fadeInUp 0.42s forwards;
+    }
+    .modal.active, .modal-bg.active { display:block; }
     .modal h3 { margin:0 0 15px 0; font-size: 1.1em;}
     .modal input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid #b3b3b3; margin-bottom: 10px; width: 92%;}
     .modal-btns { display:flex; gap:10px; justify-content:flex-end;}
     .modal-btns button { border-radius:7px; border:none; padding:6px 16px; font-size:1em; cursor:pointer;}
-    .modal-btns .ok { background:#6366f1; color:#fff;}
+    .modal-btns .ok { background:#6366f1; color:#fff; transition: background 0.18s;}
+    .modal-btns .ok:active { background: #4f46e5;}
     .modal-btns .ok:hover { background: #818cf8;}
     .modal-btns .cancel { background: #e5e7eb;}
     .points-block { background: linear-gradient(90deg,#a5b4fc88 0%,#6366f177 100%); border-radius: 12px; padding: 20px 0 14px 0; text-align: center; margin-bottom: 32px; box-shadow: 0 2px 8px #c7d2fe22;}
@@ -30,8 +62,21 @@
     .points-value { font-size: 2.5em; font-weight: bold; color: #374151;}
     .products-title { font-weight: 700; margin: 14px 0 12px 0; letter-spacing: 1px;}
     .product-list { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; }
-    .product-card { background: #f4f3ff; border-radius: 12px; width: 135px; text-align: center; padding: 16px 10px 14px 10px; box-shadow: 0 2px 10px #d1d5db22; transition: box-shadow 0.18s;}
-    .product-card:hover { box-shadow: 0 4px 18px #a5b4fc22;}
+    .product-card {
+      background: #f4f3ff;
+      border-radius: 12px;
+      width: 135px;
+      text-align: center;
+      padding: 16px 10px 14px 10px;
+      box-shadow: 0 2px 10px #d1d5db22;
+      transition: box-shadow 0.2s, transform 0.19s;
+      opacity:0; transform: translateY(24px) scale(0.98);
+      animation: cardIn 0.46s forwards;
+    }
+    .product-card:hover {
+      box-shadow: 0 6px 24px #818cf866;
+      transform: scale(1.07) translateY(-2px);
+    }
     .product-img { width: 62px; height: 62px; border-radius: 8px; margin-bottom: 6px; box-shadow:0 2px 7px #c7d2fe33;}
     .product-name { font-weight: 600; margin: 6px 0; }
     .product-points { color:#6366f1; font-size:1.04em; font-weight:700;}
@@ -40,6 +85,18 @@
     @media (max-width: 540px) {
       .container {margin-top: 12px; padding: 20px 5vw 20px 5vw;}
       .product-card {width: 43vw; min-width:90px;}
+    }
+    @keyframes fadeIn {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform:translate(-50%,-80%) scale(0.92);}
+      to { opacity: 1; transform:translate(-50%,-54%) scale(1);}
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(24px) scale(0.98);}
+      to { opacity:1; transform: translateY(0) scale(1);}
     }
   </style>
 </head>
@@ -59,7 +116,7 @@
     </div>
     <!-- 新增小朋友 modal -->
     <div class="modal-bg" id="modalBg"></div>
-    <div class="modal" id="addStudentDialog" style="display:none;">
+    <div class="modal" id="addStudentDialog">
       <h3>新增小朋友</h3>
       <input type="text" id="newStudentName" placeholder="請輸入小朋友名字">
       <div class="modal-btns">
@@ -78,9 +135,9 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    const LIFF_ID = "2008129060-mO9azRD1"; // 你的 LIFF ID
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // 你的 Firebase 網址
-    const MAX_STUDENTS = 3;
+    const LIFF_ID = "2008129060-mO9azRD1"; // 請換成你的 LIFF ID
+    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // 換成你的 Firebase URL
+    const MAX_STUDENTS = 2;
 
     let globalUserId = "";
 
@@ -101,7 +158,6 @@
         });
     }
 
-    // 若家長資料不存在則自動建立
     function ensureParentExists(userId, userName) {
       fetch(`${FIREBASE_URL}/parents/${userId}.json`)
         .then(res => res.json())
@@ -172,12 +228,12 @@
       const list = document.getElementById('productList');
       list.innerHTML = "";
       if (products && products.length > 0) {
-        products.forEach(prod => {
+        products.forEach((prod, idx) => {
           const name = prod[0] || "";
           const pts = prod[1] || 0;
           const img = prod[2] || "https://fakeimg.pl/62x62/cccccc/909090/?text=?";
           const html = `
-            <div class="product-card">
+            <div class="product-card" style="animation-delay:${idx*0.07}s">
               <img class="product-img" src="${img}" alt="${name}">
               <div class="product-name">${name}</div>
               <div class="product-points">${pts} 點</div>
@@ -190,7 +246,7 @@
       }
     }
 
-    // ===== 新增小朋友功能 + UI & 限制 =====
+    // ===== 新增小朋友功能 + Modal動畫+數量限制2位 =====
     document.addEventListener('DOMContentLoaded', function() {
       const addStudentBtn = document.getElementById('addStudentBtn');
       const addStudentDialog = document.getElementById('addStudentDialog');
@@ -201,15 +257,35 @@
       const studentSel = document.getElementById('studentSel');
 
       function showModal(flag) {
-        addStudentDialog.style.display = flag ? '' : 'none';
-        modalBg.style.display = flag ? '' : 'none';
-        if (flag) setTimeout(()=>{newStudentName.focus();}, 120);
+        if(flag){
+          addStudentDialog.classList.add('active');
+          modalBg.classList.add('active');
+          addStudentDialog.style.display = '';
+          modalBg.style.display = '';
+          setTimeout(()=>{newStudentName.focus();}, 120);
+        }else{
+          addStudentDialog.classList.remove('active');
+          modalBg.classList.remove('active');
+          setTimeout(()=>{
+            addStudentDialog.style.display = 'none';
+            modalBg.style.display = 'none';
+          }, 290);
+        }
       }
 
       if (addStudentBtn) {
         addStudentBtn.onclick = function() {
-          showModal(true);
-          newStudentName.value = '';
+          // 檢查數量
+          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
+            .then(r => r.json())
+            .then(students => {
+              if (students && Object.keys(students).length >= MAX_STUDENTS) {
+                alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
+                return;
+              }
+              showModal(true);
+              newStudentName.value = '';
+            });
         };
       }
       if (cancelAddStudent) {
@@ -259,8 +335,4 @@
       }
     });
 
-    main();
-  </script>
-</body>
-</html>
-
+   
