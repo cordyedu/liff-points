@@ -5,8 +5,8 @@
   <title>學生點數查詢</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body { font-family: 'Noto Sans TC', sans-serif; }
-    .container { max-width: 400px; margin: 40px auto 0; background: #fff; border-radius: 18px; padding: 32px 24px 28px 24px; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: #f3f4f6; }
+    .container { max-width: 400px; margin: 40px auto 0; background: #fff; border-radius: 18px; padding: 32px 24px 28px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);}
     .user-block { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
     .avatar { width: 56px; height: 56px; border-radius: 50%; }
     .user-name { font-weight: bold; }
@@ -16,7 +16,10 @@
     .product-list { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
     .product-card { background: #f4f3ff; border-radius: 10px; width: 135px; text-align: center; padding: 14px 10px 12px 10px; }
     .product-img { width: 62px; height: 62px; border-radius: 8px; }
-    .footer { text-align: center; color: #aaa; font-size: 0.95em; }
+    .footer { text-align: center; color: #aaa; font-size: 0.95em; margin-top: 40px;}
+    #addStudentDialog {margin-bottom: 10px;}
+    #addStudentDialog input { padding: 6px; border-radius: 5px; border: 1px solid #bbb; }
+    #addStudentDialog button { margin-left: 6px; }
   </style>
 </head>
 <body>
@@ -25,12 +28,19 @@
       <img id="avatar" class="avatar" src="https://fakeimg.pl/56x56/?text=?" alt="頭像">
       <div>
         <div id="userName" class="user-name">載入中...</div>
-        <div id="userId" class="user-id"></div>
+        <div id="userId" class="user-id" style="font-size:0.92em;color:#aaa;"></div>
       </div>
     </div>
     <div id="studentSelector" style="margin-bottom:16px; display:none;">
       <label for="studentSel">選擇小朋友：</label>
       <select id="studentSel"></select>
+      <button id="addStudentBtn" type="button" style="margin-left:8px;">新增小朋友</button>
+    </div>
+    <!-- 新增小朋友對話框 -->
+    <div id="addStudentDialog" style="display:none;">
+      <input type="text" id="newStudentName" placeholder="請輸入小朋友名字">
+      <button id="confirmAddStudent" type="button">送出</button>
+      <button id="cancelAddStudent" type="button">取消</button>
     </div>
     <div class="points-block">
       <div class="points-label">目前點數</div>
@@ -43,8 +53,9 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    const LIFF_ID = "2008129060-mO9azRD1"; // 換成你LINE LIFF的ID
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app/"; // 換成你的Firebase網址
+    // 設定你的 LIFF ID 跟 Firebase DB 網址
+    const LIFF_ID = "你的LIFF_ID"; // <<<<<<< 請換成你自己的 LIFF ID
+    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // <<<<<<< 換成你的 Firebase 網址
 
     let globalUserId = "";
 
@@ -56,7 +67,6 @@
           document.getElementById('userName').innerText = profile.displayName || "未知用戶";
           document.getElementById('userId').innerText = profile.userId;
           globalUserId = profile.userId;
-          // 這裡檢查家長檔案，沒有就自動建立
           ensureParentExists(profile.userId, profile.displayName);
           loadStudents(profile.userId);
         })
@@ -66,7 +76,7 @@
         });
     }
 
-    // 檢查家長資料，沒有就建立
+    // 若家長資料不存在則自動建立
     function ensureParentExists(userId, userName) {
       fetch(`${FIREBASE_URL}/parents/${userId}.json`)
         .then(res => res.json())
@@ -89,8 +99,9 @@
       fetch(`${FIREBASE_URL}/parents/${userId}/students.json`)
         .then(r => r.json())
         .then(students => {
-          if (!students) {
-            document.getElementById('studentSelector').style.display = 'none';
+          if (!students || Object.keys(students).length === 0) {
+            document.getElementById('studentSelector').style.display = '';
+            document.getElementById('studentSel').innerHTML = '<option value="">（尚未新增小朋友）</option>';
             document.getElementById('pointsValue').innerText = "--";
             renderProducts([]);
             return;
@@ -108,14 +119,23 @@
       sel.onchange = function() {
         loadStudent(sel.value);
       };
-      loadStudent(sel.value); // 預設載入第一位
+      if (sel.value) {
+        loadStudent(sel.value); // 預設載入第一位
+      } else if (students.length > 0) {
+        loadStudent(students[0].studentId); // fallback
+      }
     }
 
     function loadStudent(studentId) {
+      if (!studentId) {
+        document.getElementById('pointsValue').innerText = "--";
+        renderProducts([]);
+        return;
+      }
       fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`)
         .then(r => r.json())
         .then(student => {
-          document.getElementById('pointsValue').innerText = student.points;
+          document.getElementById('pointsValue').innerText = student && student.points !== undefined ? student.points : "--";
         });
       loadProducts();
     }
@@ -124,6 +144,10 @@
       fetch(`${FIREBASE_URL}/products.json`)
         .then(r => r.json())
         .then(products => {
+          if (!products) {
+            renderProducts([]);
+            return;
+          }
           const prodArr = Object.values(products);
           renderProducts(prodArr.map(p=>[p.name, p.point, p.img]));
         });
@@ -150,6 +174,58 @@
         list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
       }
     }
+
+    // ===== 新增小朋友功能 =====
+    document.addEventListener('DOMContentLoaded', function() {
+      const addStudentBtn = document.getElementById('addStudentBtn');
+      const addStudentDialog = document.getElementById('addStudentDialog');
+      const confirmAddStudent = document.getElementById('confirmAddStudent');
+      const cancelAddStudent = document.getElementById('cancelAddStudent');
+      const newStudentName = document.getElementById('newStudentName');
+      const studentSel = document.getElementById('studentSel');
+
+      if (addStudentBtn) {
+        addStudentBtn.onclick = function() {
+          addStudentDialog.style.display = '';
+          newStudentName.value = '';
+          setTimeout(()=>{newStudentName.focus();}, 150);
+        };
+      }
+      if (cancelAddStudent) {
+        cancelAddStudent.onclick = function() {
+          addStudentDialog.style.display = 'none';
+        };
+      }
+      if (confirmAddStudent) {
+        confirmAddStudent.onclick = function() {
+          const name = newStudentName.value.trim();
+          if (!name) {
+            alert('請輸入小朋友名字');
+            return;
+          }
+          // 產生唯一ID（用時間戳記）
+          const studentId = 'S' + Date.now();
+          // 預設點數 0
+          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+              name: name,
+              points: 0
+            })
+          }).then(() => {
+            addStudentDialog.style.display = 'none';
+            loadStudents(globalUserId); // 重新載入學生清單
+          });
+        };
+      }
+      // 切換學生時自動更新點數
+      if (studentSel) {
+        studentSel.onchange = function() {
+          loadStudent(studentSel.value);
+        };
+      }
+    });
 
     main();
   </script>
