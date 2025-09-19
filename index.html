@@ -5,158 +5,25 @@
   <title>學生點數查詢</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body { 
-      font-family: 'Noto Sans TC', sans-serif; 
-      background: radial-gradient(circle at 50% 0%, #dad4ff 0%, #f3f4f6 100%);
-      min-height:100vh;
-    }
-    .container { 
-      max-width: 430px; margin: 40px auto 0; 
-      background: #fff; border-radius: 22px; 
-      padding: 38px 28px 32px 28px; 
-      box-shadow: 0 6px 32px rgba(120,70,255,0.13), 0 1.5px 8px rgba(0,0,0,0.07);
-      position: relative;
-      overflow: hidden;
-    }
-    .container::after {
-      content: '';
-      position: absolute;
-      top: -63px; right: -48px;
-      width: 180px; height: 180px;
-      background: radial-gradient(circle at 40% 40%, #ecd9ff 0%, #e0e7ff 90%);
-      opacity: 0.45;
-      border-radius: 50%;
-      z-index: 0;
-    }
-    .user-block { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; position: relative; z-index: 2; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: radial-gradient(circle at 50% 0%, #dad4ff 0%, #f3f4f6 100%);}
+    .container { max-width: 430px; margin: 40px auto 0; background: #fff; border-radius: 22px; padding: 38px 28px 32px 28px; box-shadow: 0 6px 32px rgba(120,70,255,0.13), 0 1.5px 8px rgba(0,0,0,0.07);}
+    .user-block { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; position: relative; z-index: 2;}
     .avatar { width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 1.5px 7px #a9a4d7a0;}
     .user-name { font-weight: bold; font-size:1.08em; color: #6d5aaf;}
-    .points-block { 
-      background: linear-gradient(105deg, #f3f0ff 0%, #e0e7ff 100%);
-      border-radius: 12px; 
-      padding: 26px 0 22px 0; 
-      text-align: center; 
-      margin-bottom: 34px;
-      box-shadow: 0 2px 16px #b8a7ff1a;
-      position: relative; z-index: 2;
-    }
+    .not-approved { padding: 18px 0; color: #bb1e1e; background: #ffeaea; border-radius: 10px; font-size: 1.09em; text-align:center; margin-bottom: 18px;}
+    .points-block { background: linear-gradient(105deg, #f3f0ff 0%, #e0e7ff 100%); border-radius: 12px; padding: 26px 0 22px 0; text-align: center; margin-bottom: 34px; box-shadow: 0 2px 16px #b8a7ff1a;}
     .points-label { font-size:1.13em; color: #7a5cff; font-weight: 600;}
     .points-value { font-size: 2.7em; font-weight:800; color: #4b3fa0; letter-spacing: 2px; text-shadow: 0 1.5px 4px #d6d0f9;}
     .products-title { font-size:1.15em; font-weight: 700; margin: 14px 0 10px 0; color:#5445a0; letter-spacing:1px;}
-    .product-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 22px;
-      justify-content: center;
-      margin-bottom: 10px;
-      position: relative; z-index:2;
-    }
-    .product-card {
-      background: linear-gradient(120deg, #f9f7ff 0%, #ebe7ff 100%);
-      border-radius: 20px;
-      width: 158px;
-      min-height: 215px;
-      text-align: center;
-      padding: 22px 14px 16px 14px;
-      box-shadow: 0 6px 20px rgba(110,100,230,0.13), 0 1.5px 8px rgba(0,0,0,0.05);
-      transition: transform 0.20s cubic-bezier(.16,.75,.36,1.13), box-shadow 0.19s;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      overflow: hidden;
-      z-index:2;
-      animation: fadeInUp 0.5s;
-    }
-    .product-card:hover {
-      transform: translateY(-7px) scale(1.07) rotate(-2.5deg);
-      box-shadow: 0 15px 32px rgba(76,50,180,0.19), 0 4px 24px #b8a7ff44;
-      border: 2px solid #c2b8ff;
-      background: linear-gradient(120deg, #f7f2fe 0%, #e2dbff 70%);
-      filter: brightness(1.07);
-    }
-    .product-img {
-      width: 100px;
-      height: 100px;
-      border-radius: 14px;
-      object-fit: cover;
-      box-shadow: 0 4px 16px rgba(80,60,130,0.18);
-      margin-bottom: 10px;
-      border: 2.5px solid #ded8ff;
-      background: linear-gradient(135deg,#f3f0ff 0%,#e0e7ff 100%);
-      transition: transform 0.22s cubic-bezier(.16,.75,.36,1.13);
-    }
-    .product-card:hover .product-img {
-      transform: scale(1.13) rotate(-2deg);
-      box-shadow: 0 8px 24px #7a5cff30;
-      border: 2.5px solid #b1a0ff;
-    }
-    .product-name {
-      font-size: 1.18em;
-      font-weight: 700;
-      color: #6546b5;
-      margin-bottom: 7px;
-      margin-top: 3px;
-      letter-spacing: 0.8px;
-      text-shadow: 0 2px 8px #e3defc88;
-      transition: color 0.18s;
-    }
-    .product-card:hover .product-name {
-      color: #a97cff;
-      text-shadow: 0 2px 9px #d3c7ff88;
-    }
-    .product-points {
-      font-size: 1.1em;
-      color: #7a5cff;
-      font-weight: 600;
-      margin-bottom: 2px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: 0.5px;
-      transition: color 0.18s;
-    }
-    .product-card:hover .product-points {
-      color: #ff80c0;
-    }
-    .product-points:before {
-      content: "✨";
-      font-size: 1em;
-      margin-right: 2px;
-      opacity: 0.75;
-      animation: sparkle 1.8s infinite cubic-bezier(.28,.63,.46,.96);
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(40px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-    @keyframes sparkle {
-      0%,100%{ color: #ffb800;}
-      40%{ color: #7a5cff;}
-      70%{ color: #ff80c0;}
-    }
-    .product-card .shine {
-      position: absolute;
-      left: -40px; top:-20px;
-      width: 160px; height: 60px;
-      background: linear-gradient(105deg,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.4) 55%,rgba(255,255,255,0.05) 100%);
-      transform: rotate(-13deg);
-      pointer-events:none;
-      z-index:1;
-      opacity:0.85;
-      animation: shineMove 1.8s infinite;
-    }
-    @keyframes shineMove {
-      0%   {left:-60px; opacity:0.3;}
-      40%  {left:70px; opacity:0.95;}
-      100% {left:160px; opacity:0.3;}
-    }
+    .product-list {display: flex; flex-wrap: wrap; gap: 22px; justify-content: center; margin-bottom: 10px;}
+    .product-card { background: linear-gradient(120deg, #f9f7ff 0%, #ebe7ff 100%); border-radius: 20px; width: 158px; min-height: 215px; text-align: center; padding: 22px 14px 16px 14px; box-shadow: 0 6px 20px rgba(110,100,230,0.13), 0 1.5px 8px rgba(0,0,0,0.05); transition: transform 0.20s cubic-bezier(.16,.75,.36,1.13), box-shadow 0.19s; position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer; overflow: hidden; z-index:2; animation: fadeInUp 0.5s;}
+    .product-card:hover { transform: translateY(-7px) scale(1.07) rotate(-2.5deg); box-shadow: 0 15px 32px rgba(76,50,180,0.19), 0 4px 24px #b8a7ff44; border: 2px solid #c2b8ff; background: linear-gradient(120deg, #f7f2fe 0%, #e2dbff 70%); filter: brightness(1.07);}
+    .product-img { width: 100px; height: 100px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 16px rgba(80,60,130,0.18); margin-bottom: 10px; border: 2.5px solid #ded8ff; background: linear-gradient(135deg,#f3f0ff 0%,#e0e7ff 100%);}
+    .product-name { font-size: 1.18em; font-weight: 700; color: #6546b5; margin-bottom: 7px; margin-top: 3px; letter-spacing: 0.8px; text-shadow: 0 2px 8px #e3defc88;}
+    .product-points { font-size: 1.1em; color: #7a5cff; font-weight: 600; margin-bottom: 2px; display: flex; justify-content: center; align-items: center; gap: 6px; letter-spacing: 0.5px;}
+    .product-points:before { content: "✨"; font-size: 1em; margin-right: 2px; opacity: 0.75;}
+    @keyframes fadeInUp {from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: translateY(0);}}
     .footer { text-align: center; color: #aaa; font-size: 0.95em; margin-top: 40px;}
-    #addStudentDialog {margin-bottom: 10px;}
-    #addStudentDialog input { padding: 6px; border-radius: 5px; border: 1px solid #bbb; }
-    #addStudentDialog button { margin-left: 6px; }
   </style>
 </head>
 <body>
@@ -168,31 +35,22 @@
         <div id="userId" class="user-id" style="font-size:0.92em;color:#aaa;"></div>
       </div>
     </div>
-    <div id="studentSelector" style="margin-bottom:16px; display:none;">
-      <label for="studentSel">選擇小朋友：</label>
-      <select id="studentSel"></select>
-      <button id="addStudentBtn" type="button" style="margin-left:8px;">新增小朋友</button>
+    <div id="notApproved" class="not-approved" style="display:none;">
+      尚未獲得管理員批准，請聯絡管理員。
     </div>
-    <!-- 新增小朋友對話框 -->
-    <div id="addStudentDialog" style="display:none;">
-      <input type="text" id="newStudentName" placeholder="請輸入小朋友名字">
-      <button id="confirmAddStudent" type="button">送出</button>
-      <button id="cancelAddStudent" type="button">取消</button>
-    </div>
-    <div class="points-block">
+    <div class="points-block" id="pointsBlock" style="display:none;">
       <div class="points-label">目前點數</div>
       <div id="pointsValue" class="points-value">--</div>
     </div>
-    <div class="products-title">可兌換商品</div>
-    <div class="product-list" id="productList"></div>
+    <div class="products-title" id="productsTitle" style="display:none;">可兌換商品</div>
+    <div class="product-list" id="productList" style="display:none;"></div>
   </div>
   <div class="footer">Points Shop 學生點數查詢系統</div>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // 設定你的 LIFF ID 跟 Firebase DB 網址
-    const LIFF_ID = "2008129060-mO9azRD1"; // <<<<<<< 請換成你自己的 LIFF ID
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // <<<<<<< 換成你的 Firebase 網址
+    const LIFF_ID = "2008129060-mO9azRD1";
+    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
 
     let globalUserId = "";
 
@@ -204,8 +62,7 @@
           document.getElementById('userName').innerText = profile.displayName || "未知用戶";
           document.getElementById('userId').innerText = profile.userId;
           globalUserId = profile.userId;
-          ensureParentExists(profile.userId, profile.displayName);
-          loadStudents(profile.userId);
+          loadParent(profile.userId);
         })
         .catch(err => {
           document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2>";
@@ -213,67 +70,33 @@
         });
     }
 
-    // 若家長資料不存在則自動建立
-    function ensureParentExists(userId, userName) {
+    // 只讀取家長資料，判斷是否被批准
+    function loadParent(userId) {
       fetch(`${FIREBASE_URL}/parents/${userId}.json`)
-        .then(res => res.json())
-        .then(data => {
-          if (data === null) {
-            fetch(`${FIREBASE_URL}/parents/${userId}.json`, {
-              method: 'PUT',
-              headers: {'Content-Type':'application/json'},
-              body: JSON.stringify({
-                displayName: userName,
-                createdAt: new Date().toISOString(),
-                students: {}
-              })
-            });
-          }
-        });
-    }
-
-    function loadStudents(userId) {
-      fetch(`${FIREBASE_URL}/parents/${userId}/students.json`)
         .then(r => r.json())
-        .then(students => {
-          if (!students || Object.keys(students).length === 0) {
-            document.getElementById('studentSelector').style.display = '';
-            document.getElementById('studentSel').innerHTML = '<option value="">（尚未新增小朋友）</option>';
-            document.getElementById('pointsValue').innerText = "--";
-            renderProducts([]);
+        .then(parent => {
+          if (!parent || parent.approved !== true) {
+            // 未批准或不存在
+            document.getElementById('notApproved').style.display = '';
+            document.getElementById('pointsBlock').style.display = 'none';
+            document.getElementById('productsTitle').style.display = 'none';
+            document.getElementById('productList').style.display = 'none';
             return;
           }
-          const studentArr = Object.entries(students).map(([sid, obj]) => ({studentId: sid, name: obj.name, points: obj.points}));
-          showStudentSelector(studentArr);
+          // 已批准，顯示資料
+          document.getElementById('notApproved').style.display = 'none';
+          loadStudentAndProducts(userId, parent);
         });
     }
 
-    function showStudentSelector(students) {
-      const selDiv = document.getElementById('studentSelector');
-      const sel = document.getElementById('studentSel');
-      sel.innerHTML = students.map(s => `<option value="${s.studentId}">${s.name}</option>`).join('');
-      selDiv.style.display = '';
-      sel.onchange = function() {
-        loadStudent(sel.value);
-      };
-      if (sel.value) {
-        loadStudent(sel.value); // 預設載入第一位
-      } else if (students.length > 0) {
-        loadStudent(students[0].studentId); // fallback
-      }
-    }
-
-    function loadStudent(studentId) {
-      if (!studentId) {
-        document.getElementById('pointsValue').innerText = "--";
-        renderProducts([]);
-        return;
-      }
-      fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`)
-        .then(r => r.json())
-        .then(student => {
-          document.getElementById('pointsValue').innerText = student && student.points !== undefined ? student.points : "--";
-        });
+    function loadStudentAndProducts(userId, parent) {
+      // 假設只查詢第一位小朋友
+      const students = parent.students || {};
+      const firstStudent = Object.values(students)[0];
+      document.getElementById('pointsBlock').style.display = '';
+      document.getElementById('productsTitle').style.display = '';
+      document.getElementById('productList').style.display = '';
+      document.getElementById('pointsValue').innerText = firstStudent && firstStudent.points !== undefined ? firstStudent.points : "--";
       loadProducts();
     }
 
@@ -281,89 +104,28 @@
       fetch(`${FIREBASE_URL}/products.json`)
         .then(r => r.json())
         .then(products => {
+          const list = document.getElementById('productList');
+          list.innerHTML = "";
           if (!products) {
-            renderProducts([]);
+            list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
             return;
           }
           const prodArr = Object.values(products);
-          renderProducts(prodArr.map(p=>[p.name, p.point, p.img]));
-        });
-    }
-
-    // ====== 只美化商品卡片 ======
-    function renderProducts(products) {
-      const list = document.getElementById('productList');
-      list.innerHTML = "";
-      if (products && products.length > 0) {
-        products.forEach(prod => {
-          const name = prod[0] || "";
-          const pts = prod[1] || 0;
-          const img = prod[2] || "https://fakeimg.pl/100x100/cccccc/909090/?text=?";
-          const html = `
-            <div class="product-card">
-              <div class="shine"></div>
-              <img class="product-img" src="${img}" alt="${name}">
-              <div class="product-name">${name}</div>
-              <div class="product-points">${pts} 點</div>
-            </div>
-          `;
-          list.insertAdjacentHTML('beforeend', html);
-        });
-      } else {
-        list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
-      }
-    }
-    // ===== 下面完全原樣 =====
-    document.addEventListener('DOMContentLoaded', function() {
-      const addStudentBtn = document.getElementById('addStudentBtn');
-      const addStudentDialog = document.getElementById('addStudentDialog');
-      const confirmAddStudent = document.getElementById('confirmAddStudent');
-      const cancelAddStudent = document.getElementById('cancelAddStudent');
-      const newStudentName = document.getElementById('newStudentName');
-      const studentSel = document.getElementById('studentSel');
-
-      if (addStudentBtn) {
-        addStudentBtn.onclick = function() {
-          addStudentDialog.style.display = '';
-          newStudentName.value = '';
-          setTimeout(()=>{newStudentName.focus();}, 150);
-        };
-      }
-      if (cancelAddStudent) {
-        cancelAddStudent.onclick = function() {
-          addStudentDialog.style.display = 'none';
-        };
-      }
-      if (confirmAddStudent) {
-        confirmAddStudent.onclick = function() {
-          const name = newStudentName.value.trim();
-          if (!name) {
-            alert('請輸入小朋友名字');
-            return;
-          }
-          // 產生唯一ID（用時間戳記）
-          const studentId = 'S' + Date.now();
-          // 預設點數 0
-          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
-            method: 'PUT',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-              name: name,
-              points: 0
-            })
-          }).then(() => {
-            addStudentDialog.style.display = 'none';
-            loadStudents(globalUserId); // 重新載入學生清單
+          prodArr.forEach(prod => {
+            const name = prod.name || "";
+            const pts = prod.point || 0;
+            const img = prod.img || "https://fakeimg.pl/100x100/cccccc/909090/?text=?";
+            const html = `
+              <div class="product-card">
+                <img class="product-img" src="${img}" alt="${name}">
+                <div class="product-name">${name}</div>
+                <div class="product-points">${pts} 點</div>
+              </div>
+            `;
+            list.insertAdjacentHTML('beforeend', html);
           });
-        };
-      }
-      // 切換學生時自動更新點數
-      if (studentSel) {
-        studentSel.onchange = function() {
-          loadStudent(studentSel.value);
-        };
-      }
-    });
+        });
+    }
 
     main();
   </script>
