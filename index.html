@@ -132,15 +132,12 @@
     <div class="product-list" id="productList"></div>
   </div>
   <div class="footer">Points Shop 學生點數查詢系統</div>
-
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     const LIFF_ID = "2008129060-mO9azRD1"; // 請換成你的 LIFF ID
     const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // 換成你的 Firebase URL
     const MAX_STUDENTS = 2;
-
     let globalUserId = "";
-
     function main() {
       liff.init({ liffId: LIFF_ID })
         .then(() => liff.getProfile())
@@ -157,7 +154,6 @@
           console.error(err);
         });
     }
-
     function ensureParentExists(userId, userName) {
       fetch(`${FIREBASE_URL}/parents/${userId}.json`)
         .then(res => res.json())
@@ -175,7 +171,6 @@
           }
         });
     }
-
     function loadStudents(userId) {
       fetch(`${FIREBASE_URL}/parents/${userId}/students.json`)
         .then(r => r.json())
@@ -196,7 +191,6 @@
           };
         });
     }
-
     function loadStudent(studentId) {
       if (!studentId) {
         document.getElementById('pointsValue').innerText = "--";
@@ -210,7 +204,6 @@
         });
       loadProducts();
     }
-
     function loadProducts() {
       fetch(`${FIREBASE_URL}/products.json`)
         .then(r => r.json())
@@ -223,7 +216,6 @@
           renderProducts(prodArr.map(p=>[p.name, p.point, p.img]));
         });
     }
-
     function renderProducts(products) {
       const list = document.getElementById('productList');
       list.innerHTML = "";
@@ -245,7 +237,6 @@
         list.innerHTML = '<div class="no-products">目前沒有可兌換商品</div>';
       }
     }
-
     // ===== 新增小朋友功能 + Modal動畫+數量限制2位 =====
     document.addEventListener('DOMContentLoaded', function() {
       const addStudentBtn = document.getElementById('addStudentBtn');
@@ -255,7 +246,6 @@
       const cancelAddStudent = document.getElementById('cancelAddStudent');
       const newStudentName = document.getElementById('newStudentName');
       const studentSel = document.getElementById('studentSel');
-
       function showModal(flag) {
         if(flag){
           addStudentDialog.classList.add('active');
@@ -272,7 +262,6 @@
           }, 290);
         }
       }
-
       if (addStudentBtn) {
         addStudentBtn.onclick = function() {
           // 檢查數量
@@ -298,7 +287,6 @@
           showModal(false);
         };
       }
-
       if (confirmAddStudent) {
         confirmAddStudent.onclick = function() {
           const name = newStudentName.value.trim();
@@ -322,10 +310,11 @@
                 }
               }
               const studentId = 'S' + Date.now();
-              fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
-                method: 'PUT',
+              // 這裡改為 PATCH 並確保 points 傳數字 0
+              fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`, {
+                method: 'PATCH',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ name, points: 0 })
+                body: JSON.stringify({ [studentId]: { name: name, points: 0 } })
               }).then(() => {
                 showModal(false);
                 loadStudents(globalUserId);
@@ -334,7 +323,6 @@
         };
       }
     });
-
     main();
   </script>
 </body>
