@@ -69,12 +69,13 @@ function main() {
     });
 }
 
+// 修正版：只在不存在時PUT，失敗會顯示錯誤
 function loadParent(userId, displayName) {
   fetch(`${FIREBASE_URL}/parents/${userId}.json`)
     .then(r => r.json())
     .then(parent => {
       if (!parent) {
-        // 自動新增一筆未批准的家長資料
+        // 只在資料庫不存在時嘗試註冊
         fetch(`${FIREBASE_URL}/parents/${userId}.json`, {
           method: 'PUT',
           headers: {'Content-Type':'application/json'},
@@ -83,8 +84,14 @@ function loadParent(userId, displayName) {
             approved: false,
             students: {}
           })
-        }).then(() => {
-          showNotApproved();
+        })
+        .then(res => {
+          if(res.ok){
+            showNotApproved();
+          }else{
+            document.getElementById('notApproved').innerText = '申請失敗，請聯絡管理員（規則設錯或權限不足）';
+            document.getElementById('notApproved').style.display = '';
+          }
         });
         return;
       }
@@ -93,6 +100,10 @@ function loadParent(userId, displayName) {
         return;
       }
       showApproved(parent);
+    })
+    .catch(err => {
+      document.getElementById('notApproved').innerText = '連線失敗，請稍後再試';
+      document.getElementById('notApproved').style.display = '';
     });
 }
 
@@ -105,7 +116,6 @@ function showNotApproved() {
 
 function showApproved(parent) {
   document.getElementById('notApproved').style.display = 'none';
-  // 下面是原本顯示資料的流程
   const students = parent.students || {};
   const firstStudent = Object.values(students)[0];
   document.getElementById('pointsBlock').style.display = '';
@@ -143,7 +153,6 @@ function loadProducts() {
 }
 
 main();
-</script>
+  </script>
 </body>
 </html>
-
