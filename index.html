@@ -24,6 +24,9 @@
     .product-points:before { content: "✨"; font-size: 1em; margin-right: 2px; opacity: 0.75;}
     @keyframes fadeInUp {from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: translateY(0);}}
     .footer { text-align: center; color: #aaa; font-size: 0.95em; margin-top: 40px;}
+    /* 新增學生選擇區塊樣式 */
+    #studentSelectorBlock { margin-bottom: 18px; display: none; }
+    #studentSelector { font-size:1em; padding:5px 8px; border-radius:8px; border:1px solid #ccc; }
   </style>
 </head>
 <body>
@@ -34,6 +37,12 @@
         <div id="userName" class="user-name">載入中...</div>
         <div id="userId" class="user-id" style="font-size:0.92em;color:#aaa;"></div>
       </div>
+    </div>
+    <!-- 學生選擇器 -->
+    <div id="studentSelectorBlock">
+      <select id="studentSelector">
+        <option value="">請選擇學生</option>
+      </select>
     </div>
     <div id="notApproved" class="not-approved" style="display:none;">
       尚未獲得管理員批准，請聯絡管理員。
@@ -52,6 +61,7 @@
 const LIFF_ID = "2008129060-mO9azRD1";
 const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
 let globalUserId = "";
+let globalStudents = null;
 
 function main() {
   liff.init({ liffId: LIFF_ID })
@@ -120,17 +130,51 @@ function showNotApproved() {
   document.getElementById('pointsBlock').style.display = 'none';
   document.getElementById('productsTitle').style.display = 'none';
   document.getElementById('productList').style.display = 'none';
+  document.getElementById('studentSelectorBlock').style.display = 'none';
 }
 
 function showApproved(parent) {
   document.getElementById('notApproved').style.display = 'none';
   const students = parent.students || {};
-  const firstStudent = Object.values(students)[0];
-  document.getElementById('pointsBlock').style.display = '';
-  document.getElementById('productsTitle').style.display = '';
-  document.getElementById('productList').style.display = '';
-  document.getElementById('pointsValue').innerText = firstStudent && firstStudent.points !== undefined ? firstStudent.points : "--";
-  loadProducts();
+  globalStudents = students;
+
+  const selectorBlock = document.getElementById('studentSelectorBlock');
+  const selector = document.getElementById('studentSelector');
+  selector.innerHTML = '<option value="">請選擇學生</option>';
+  Object.entries(students).forEach(([key, stu]) => {
+    selector.innerHTML += `<option value="${key}">${stu.name || key}</option>`;
+  });
+
+  selectorBlock.style.display = Object.keys(students).length > 0 ? '' : 'none';
+
+  // 初始不顯示點數與商品
+  document.getElementById('pointsBlock').style.display = 'none';
+  document.getElementById('productsTitle').style.display = 'none';
+  document.getElementById('productList').style.display = 'none';
+  document.getElementById('pointsValue').innerText = "--";
+
+  selector.onchange = function() {
+    const stuKey = selector.value;
+    if (!stuKey) {
+      document.getElementById('pointsBlock').style.display = 'none';
+      document.getElementById('productsTitle').style.display = 'none';
+      document.getElementById('productList').style.display = 'none';
+      document.getElementById('pointsValue').innerText = "--";
+      return;
+    }
+    const stu = students[stuKey];
+    document.getElementById('pointsBlock').style.display = '';
+    document.getElementById('productsTitle').style.display = '';
+    document.getElementById('productList').style.display = '';
+    document.getElementById('pointsValue').innerText = stu && stu.points !== undefined ? stu.points : "--";
+    loadProducts();
+  };
+
+  // 若只一位學生則預設選中
+  if (Object.keys(students).length === 1) {
+    selector.selectedIndex = 1;
+    selector.dispatchEvent(new Event('change'));
+  }
 }
 
 function loadProducts() {
