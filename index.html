@@ -49,85 +49,101 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    const LIFF_ID = "2008129060-mO9azRD1";
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
+const LIFF_ID = "2008129060-mO9azRD1";
+const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
+let globalUserId = "";
 
-    let globalUserId = "";
+function main() {
+  liff.init({ liffId: LIFF_ID })
+    .then(() => liff.getProfile())
+    .then(profile => {
+      document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/?text=?";
+      document.getElementById('userName').innerText = profile.displayName || "未知用戶";
+      document.getElementById('userId').innerText = profile.userId;
+      globalUserId = profile.userId;
+      loadParent(profile.userId, profile.displayName);
+    })
+    .catch(err => {
+      document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2>";
+      console.error(err);
+    });
+}
 
-    function main() {
-      liff.init({ liffId: LIFF_ID })
-        .then(() => liff.getProfile())
-        .then(profile => {
-          document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/?text=?";
-          document.getElementById('userName').innerText = profile.displayName || "未知用戶";
-          document.getElementById('userId').innerText = profile.userId;
-          globalUserId = profile.userId;
-          loadParent(profile.userId);
-        })
-        .catch(err => {
-          document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2>";
-          console.error(err);
+function loadParent(userId, displayName) {
+  fetch(`${FIREBASE_URL}/parents/${userId}.json`)
+    .then(r => r.json())
+    .then(parent => {
+      if (!parent) {
+        // 自動新增一筆未批准的家長資料
+        fetch(`${FIREBASE_URL}/parents/${userId}.json`, {
+          method: 'PUT',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            displayName: displayName,
+            approved: false,
+            students: {}
+          })
+        }).then(() => {
+          showNotApproved();
         });
-    }
+        return;
+      }
+      if (parent.approved !== true) {
+        showNotApproved();
+        return;
+      }
+      showApproved(parent);
+    });
+}
 
-    // 只讀取家長資料，判斷是否被批准
-    function loadParent(userId) {
-      fetch(`${FIREBASE_URL}/parents/${userId}.json`)
-        .then(r => r.json())
-        .then(parent => {
-          if (!parent || parent.approved !== true) {
-            // 未批准或不存在
-            document.getElementById('notApproved').style.display = '';
-            document.getElementById('pointsBlock').style.display = 'none';
-            document.getElementById('productsTitle').style.display = 'none';
-            document.getElementById('productList').style.display = 'none';
-            return;
-          }
-          // 已批准，顯示資料
-          document.getElementById('notApproved').style.display = 'none';
-          loadStudentAndProducts(userId, parent);
-        });
-    }
+function showNotApproved() {
+  document.getElementById('notApproved').style.display = '';
+  document.getElementById('pointsBlock').style.display = 'none';
+  document.getElementById('productsTitle').style.display = 'none';
+  document.getElementById('productList').style.display = 'none';
+}
 
-    function loadStudentAndProducts(userId, parent) {
-      // 假設只查詢第一位小朋友
-      const students = parent.students || {};
-      const firstStudent = Object.values(students)[0];
-      document.getElementById('pointsBlock').style.display = '';
-      document.getElementById('productsTitle').style.display = '';
-      document.getElementById('productList').style.display = '';
-      document.getElementById('pointsValue').innerText = firstStudent && firstStudent.points !== undefined ? firstStudent.points : "--";
-      loadProducts();
-    }
+function showApproved(parent) {
+  document.getElementById('notApproved').style.display = 'none';
+  // 下面是原本顯示資料的流程
+  const students = parent.students || {};
+  const firstStudent = Object.values(students)[0];
+  document.getElementById('pointsBlock').style.display = '';
+  document.getElementById('productsTitle').style.display = '';
+  document.getElementById('productList').style.display = '';
+  document.getElementById('pointsValue').innerText = firstStudent && firstStudent.points !== undefined ? firstStudent.points : "--";
+  loadProducts();
+}
 
-    function loadProducts() {
-      fetch(`${FIREBASE_URL}/products.json`)
-        .then(r => r.json())
-        .then(products => {
-          const list = document.getElementById('productList');
-          list.innerHTML = "";
-          if (!products) {
-            list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
-            return;
-          }
-          const prodArr = Object.values(products);
-          prodArr.forEach(prod => {
-            const name = prod.name || "";
-            const pts = prod.point || 0;
-            const img = prod.img || "https://fakeimg.pl/100x100/cccccc/909090/?text=?";
-            const html = `
-              <div class="product-card">
-                <img class="product-img" src="${img}" alt="${name}">
-                <div class="product-name">${name}</div>
-                <div class="product-points">${pts} 點</div>
-              </div>
-            `;
-            list.insertAdjacentHTML('beforeend', html);
-          });
-        });
-    }
+function loadProducts() {
+  fetch(`${FIREBASE_URL}/products.json`)
+    .then(r => r.json())
+    .then(products => {
+      const list = document.getElementById('productList');
+      list.innerHTML = "";
+      if (!products) {
+        list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
+        return;
+      }
+      const prodArr = Object.values(products);
+      prodArr.forEach(prod => {
+        const name = prod.name || "";
+        const pts = prod.point || 0;
+        const img = prod.img || "https://fakeimg.pl/100x100/cccccc/909090/?text=?";
+        const html = `
+          <div class="product-card">
+            <img class="product-img" src="${img}" alt="${name}">
+            <div class="product-name">${name}</div>
+            <div class="product-points">${pts} 點</div>
+          </div>
+        `;
+        list.insertAdjacentHTML('beforeend', html);
+      });
+    });
+}
 
-    main();
-  </script>
+main();
+</script>
 </body>
 </html>
+
