@@ -5,103 +5,201 @@
   <title>學生點數查詢</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body { font-family: 'Noto Sans TC', sans-serif; background: #f3f4f6; }
-    .container { max-width: 400px; margin: 40px auto 0; background: #fff; border-radius: 18px; padding: 32px 24px 28px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);}
-    .user-block { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-    .avatar { width: 56px; height: 56px; border-radius: 50%; }
-    .user-name { font-weight: bold; }
-    .points-block { background: #e0e7ff; border-radius: 8px; padding: 18px 0 12px 0; text-align: center; margin-bottom: 30px; }
-    .points-value { font-size: 2.4em; }
-    .products-title { font-weight: 700; margin: 14px 0 10px 0; }
+    body { font-family: 'Noto Sans TC', sans-serif; background: radial-gradient(circle at 50% 0%, #dad4ff 0%, #f3f4f6 100%); }
+    .container { 
+      max-width: 430px; margin: 40px auto 0; 
+      background: #fff; border-radius: 22px; 
+      padding: 38px 28px 32px 28px; 
+      box-shadow: 0 6px 32px rgba(120,70,255,0.13), 0 1.5px 8px rgba(0,0,0,0.07);
+      position: relative;
+      overflow: hidden;
+    }
+    .container::after {
+      content: '';
+      position: absolute;
+      top: -63px; right: -48px;
+      width: 180px; height: 180px;
+      background: radial-gradient(circle at 40% 40%, #ecd9ff 0%, #e0e7ff 90%);
+      opacity: 0.45;
+      border-radius: 50%;
+      z-index: 0;
+    }
+    .user-block { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; position: relative; z-index: 2; }
+    .avatar { width: 64px; height: 64px; border-radius: 50%; box-shadow: 0 1.5px 7px #a9a4d7a0;}
+    .user-name { font-weight: bold; font-size:1.08em; color: #6d5aaf;}
+    .points-block { 
+      background: linear-gradient(105deg, #f3f0ff 0%, #e0e7ff 100%);
+      border-radius: 12px; 
+      padding: 26px 0 22px 0; 
+      text-align: center; 
+      margin-bottom: 34px;
+      box-shadow: 0 2px 16px #b8a7ff1a;
+      position: relative; z-index: 2;
+    }
+    .points-label { font-size:1.13em; color: #7a5cff; font-weight: 600;}
+    .points-value { font-size: 2.7em; font-weight:800; color: #4b3fa0; letter-spacing: 2px; text-shadow: 0 1.5px 4px #d6d0f9;}
+    .products-title { font-size:1.15em; font-weight: 700; margin: 14px 0 10px 0; color:#5445a0; letter-spacing:1px;}
     .product-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 22px;
       justify-content: center;
+      margin-bottom: 10px;
+      position: relative; z-index:2;
     }
     .product-card {
-      background: linear-gradient(135deg, #e9e7ff 0%, #f8f5ff 100%);
-      border-radius: 18px;
-      width: 168px;
-      min-height: 210px;
+      background: linear-gradient(120deg, #f9f7ff 0%, #ebe7ff 100%);
+      border-radius: 20px;
+      width: 158px;
+      min-height: 215px;
       text-align: center;
-      padding: 18px 12px 14px 12px;
-      box-shadow: 0 4px 16px rgba(110,100,230,0.18);
-      transition: transform 0.16s, box-shadow 0.18s;
+      padding: 22px 14px 16px 14px;
+      box-shadow: 0 6px 20px rgba(110,100,230,0.13), 0 1.5px 8px rgba(0,0,0,0.05);
+      transition: transform 0.20s cubic-bezier(.16,.75,.36,1.13), box-shadow 0.19s;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
+      cursor: pointer;
+      overflow: hidden;
+      z-index:2;
+      animation: fadeInUp 0.5s;
     }
     .product-card:hover {
-      transform: translateY(-4px) scale(1.04);
-      box-shadow: 0 8px 24px rgba(110,100,230,0.22);
+      transform: translateY(-7px) scale(1.07) rotate(-2.5deg);
+      box-shadow: 0 15px 32px rgba(76,50,180,0.19), 0 4px 24px #b8a7ff44;
+      border: 2px solid #c2b8ff;
+      background: linear-gradient(120deg, #f7f2fe 0%, #e2dbff 70%);
+      filter: brightness(1.07);
     }
     .product-img {
-      width: 90px;
-      height: 90px;
+      width: 100px;
+      height: 100px;
       border-radius: 14px;
       object-fit: cover;
-      box-shadow: 0 2px 8px rgba(60,60,120,0.13);
-      margin-bottom: 8px;
+      box-shadow: 0 4px 16px rgba(80,60,130,0.18);
+      margin-bottom: 10px;
       border: 2.5px solid #ded8ff;
+      background: linear-gradient(135deg,#f3f0ff 0%,#e0e7ff 100%);
+      transition: transform 0.22s cubic-bezier(.16,.75,.36,1.13);
+    }
+    .product-card:hover .product-img {
+      transform: scale(1.13) rotate(-2deg);
+      box-shadow: 0 8px 24px #7a5cff30;
+      border: 2.5px solid #b1a0ff;
     }
     .product-name {
       font-size: 1.18em;
       font-weight: 700;
-      color: #4b3fa0;
-      margin-bottom: 6px;
+      color: #6546b5;
+      margin-bottom: 7px;
       margin-top: 3px;
-      letter-spacing: 0.5px;
-      text-shadow: 0 1px 6px rgba(110,100,230,0.07);
+      letter-spacing: 0.8px;
+      text-shadow: 0 2px 8px #e3defc88;
+      transition: color 0.18s;
+    }
+    .product-card:hover .product-name {
+      color: #a97cff;
+      text-shadow: 0 2px 9px #d3c7ff88;
     }
     .product-points {
-      font-size: 1.08em;
+      font-size: 1.1em;
       color: #7a5cff;
       font-weight: 600;
       margin-bottom: 2px;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      letter-spacing: 0.5px;
+      transition: color 0.18s;
+    }
+    .product-card:hover .product-points {
+      color: #ff80c0;
     }
     .product-points:before {
-      content: "⭐";
+      content: "✨";
       font-size: 1em;
       margin-right: 2px;
+      opacity: 0.75;
     }
     .product-label {
       position: absolute;
-      top: 10px;
-      right: 12px;
-      background: #ffb800;
+      top: 14px;
+      right: 13px;
+      background: linear-gradient(90deg,#ffb800 60%,#ffd580 100%);
       color: #fff;
-      font-size: 0.88em;
+      font-size: 0.92em;
       font-weight: bold;
       border-radius: 8px;
-      padding: 2px 9px;
-      box-shadow: 0 1px 6px rgba(110,100,230,0.11);
+      padding: 4px 14px;
+      box-shadow: 0 2px 10px #ffd58033;
       letter-spacing: 0.5px;
+      animation: labelFadeIn 0.7s;
     }
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px);}
+      from { opacity: 0; transform: translateY(40px);}
       to { opacity: 1; transform: translateY(0);}
     }
-    .fade-in {
-      animation: fadeInUp 0.36s;
+    @keyframes labelFadeIn {
+      from { opacity: 0; transform: scale(0.7);}
+      to { opacity: 1; transform: scale(1);}
     }
-
+    @keyframes sparkle {
+      0%,100%{ color: #ffb800;}
+      40%{ color: #7a5cff;}
+      70%{ color: #ff80c0;}
+    }
+    .product-points:before {
+      animation: sparkle 1.8s infinite cubic-bezier(.28,.63,.46,.96);
+    }
+    .product-card .shine {
+      position: absolute;
+      left: -40px; top:-20px;
+      width: 160px; height: 60px;
+      background: linear-gradient(105deg,rgba(255,255,255,0.05) 0%,rgba(255,255,255,0.4) 55%,rgba(255,255,255,0.05) 100%);
+      transform: rotate(-13deg);
+      pointer-events:none;
+      z-index:1;
+      opacity:0.85;
+      animation: shineMove 1.8s infinite;
+    }
+    @keyframes shineMove {
+      0%   {left:-60px; opacity:0.3;}
+      40%  {left:70px; opacity:0.95;}
+      100% {left:160px; opacity:0.3;}
+    }
     .footer { text-align: center; color: #aaa; font-size: 0.95em; margin-top: 40px;}
     #addStudentDialog {margin-bottom: 10px;}
     #addStudentDialog input { padding: 6px; border-radius: 5px; border: 1px solid #bbb; }
     #addStudentDialog button { margin-left: 6px; }
-    /* 新增小朋友按鈕不可用時 */
+    #studentSelector label {
+      color:#7a5cff; font-weight:600; margin-right:8px; letter-spacing:1px;
+    }
+    #addStudentBtn {
+      background: linear-gradient(90deg,#dacfff 60%,#fff6c0 100%);
+      color: #6d5aaf;
+      font-weight: 600;
+      border: 1px solid #b1a0ff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      transition: all 0.12s;
+      box-shadow: 0 1.5px 7px #dacfff33;
+      cursor: pointer;
+      outline: none;
+    }
+    #addStudentBtn:active {
+      background: linear-gradient(90deg,#ffde80 60%,#dacfff 100%);
+      color: #a97cff;
+      border: 1px solid #ffb800;
+    }
     #addStudentBtn[disabled] {
       background: #eee;
       color: #bbb;
       border: 1px solid #ccc;
       cursor: not-allowed;
     }
+    #addStudentDialog input:focus { border: 1.5px solid #7a5cff; }
   </style>
 </head>
 <body>
@@ -138,9 +236,8 @@
     // 設定你的 LIFF ID 跟 Firebase DB 網址
     const LIFF_ID = "2008129060-mO9azRD1";
     const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
-
     let globalUserId = "";
-    let currentStudentCount = 0; // 記錄目前小朋友數量
+    let currentStudentCount = 0;
 
     function main() {
       liff.init({ liffId: LIFF_ID })
@@ -159,7 +256,6 @@
         });
     }
 
-    // 若家長資料不存在則自動建立
     function ensureParentExists(userId, userName) {
       fetch(`${FIREBASE_URL}/parents/${userId}.json`)
         .then(res => res.json())
@@ -197,7 +293,6 @@
         });
     }
 
-    // 限制最多只能新增兩位
     function updateAddStudentBtn() {
       const addBtn = document.getElementById('addStudentBtn');
       if (currentStudentCount >= 2) {
@@ -219,9 +314,9 @@
         loadStudent(sel.value);
       };
       if (sel.value) {
-        loadStudent(sel.value); // 預設載入第一位
+        loadStudent(sel.value);
       } else if (students.length > 0) {
-        loadStudent(students[0].studentId); // fallback
+        loadStudent(students[0].studentId);
       }
     }
 
@@ -260,10 +355,11 @@
         products.forEach((prod, idx) => {
           const name = prod[0] || "";
           const pts = prod[1] || 0;
-          const img = prod[2] || "https://fakeimg.pl/90x90/cccccc/909090/?text=?";
+          const img = prod[2] || "https://fakeimg.pl/100x100/cccccc/909090/?text=?";
           const isNew = idx < 2;
           const html = `
             <div class="product-card fade-in">
+              <div class="shine"></div>
               <img class="product-img" src="${img}" alt="${name}">
               <div class="product-name">${name}</div>
               <div class="product-points">${pts} 點</div>
@@ -277,7 +373,6 @@
       }
     }
 
-    // ===== 新增小朋友功能 =====
     document.addEventListener('DOMContentLoaded', function() {
       const addStudentBtn = document.getElementById('addStudentBtn');
       const addStudentDialog = document.getElementById('addStudentDialog');
@@ -304,19 +399,20 @@
       }
       if (confirmAddStudent) {
         confirmAddStudent.onclick = function() {
+          confirmAddStudent.disabled = true; // 防止重複送出
           const name = newStudentName.value.trim();
           if (!name) {
             alert('請輸入小朋友名字');
+            confirmAddStudent.disabled = false;
             return;
           }
           if (currentStudentCount >= 2) {
             alert("最多只能新增兩位小朋友");
             addStudentDialog.style.display = 'none';
+            confirmAddStudent.disabled = false;
             return;
           }
-          // 產生唯一ID（用時間戳記）
           const studentId = 'S' + Date.now();
-          // 預設點數 0
           fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
             method: 'PUT',
             headers: {'Content-Type':'application/json'},
@@ -326,11 +422,11 @@
             })
           }).then(() => {
             addStudentDialog.style.display = 'none';
-            loadStudents(globalUserId); // 重新載入學生清單
+            confirmAddStudent.disabled = false;
+            loadStudents(globalUserId);
           });
         };
       }
-      // 切換學生時自動更新點數
       if (studentSel) {
         studentSel.onchange = function() {
           loadStudent(studentSel.value);
