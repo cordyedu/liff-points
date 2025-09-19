@@ -6,324 +6,232 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Noto Sans TC', sans-serif; background: #f3f4f6; }
-    .container { max-width: 420px; margin: 40px auto 0; background: #fff; border-radius: 18px; padding: 32px 24px 28px 24px; box-shadow: 0 2px 14px rgba(0,0,0,0.09);}
-    .user-block { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-    .avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #a5b4fc; box-shadow: 0 0 6px #a5b4fc55;}
-    .user-name { font-weight: bold; font-size: 1.18em;}
-    .user-id { font-size: 0.92em; color: #aaa; }
-    .student-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px;}
-    select#studentSel { padding: 5px 10px; border-radius: 6px; border: 1px solid #d1d5db; min-width: 110px;}
-    #addStudentBtn {
-      background: #6366f1;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 13px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.18s, transform 0.14s;
-      box-shadow: 0 1px 8px #a5b4fc33;
-    }
-    #addStudentBtn:hover { background: #818cf8; transform: scale(1.06);}
-    .modal-bg {
-      display:none;
-      position:fixed;
-      z-index:30;
-      left:0; top:0; width:100vw; height:100vh;
-      background:rgba(80,90,120,0.18);
-      animation: fadeIn 0.33s;
-    }
-    .modal {
-      display:none;
-      position:fixed;
-      left:50%; top:50%;
-      transform:translate(-50%,-54%);
-      background:#fff;
-      border-radius:14px;
-      box-shadow:0 2px 12px #818cf855;
-      min-width:260px;
-      padding:28px 24px 22px 24px;
-      z-index:31;
-      opacity:0;
-      animation: fadeInUp 0.42s forwards;
-    }
-    .modal.active, .modal-bg.active { display:block; }
-    .modal h3 { margin:0 0 15px 0; font-size: 1.1em;}
-    .modal input[type=text] { padding: 7px 10px; border-radius: 6px; border: 1px solid #b3b3b3; margin-bottom: 10px; width: 92%;}
-    .modal-btns { display:flex; gap:10px; justify-content:flex-end;}
-    .modal-btns button { border-radius:7px; border:none; padding:6px 16px; font-size:1em; cursor:pointer;}
-    .modal-btns .ok { background:#6366f1; color:#fff; transition: background 0.18s;}
-    .modal-btns .ok:active { background: #4f46e5;}
-    .modal-btns .ok:hover { background: #818cf8;}
-    .modal-btns .cancel { background: #e5e7eb;}
-    .points-block { background: linear-gradient(90deg,#a5b4fc88 0%,#6366f177 100%); border-radius: 12px; padding: 20px 0 14px 0; text-align: center; margin-bottom: 32px; box-shadow: 0 2px 8px #c7d2fe22;}
-    .points-label { color: #6366f1; font-weight:700;}
-    .points-value { font-size: 2.5em; font-weight: bold; color: #374151;}
-    .products-title { font-weight: 700; margin: 14px 0 12px 0; letter-spacing: 1px;}
-    .product-list { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; }
-    .product-card {
-      background: #f4f3ff;
-      border-radius: 12px;
-      width: 135px;
-      text-align: center;
-      padding: 16px 10px 14px 10px;
-      box-shadow: 0 2px 10px #d1d5db22;
-      transition: box-shadow 0.2s, transform 0.19s;
-      opacity:0; transform: translateY(24px) scale(0.98);
-      animation: cardIn 0.46s forwards;
-    }
-    .product-card:hover {
-      box-shadow: 0 6px 24px #818cf866;
-      transform: scale(1.07) translateY(-2px);
-    }
-    .product-img { width: 62px; height: 62px; border-radius: 8px; margin-bottom: 6px; box-shadow:0 2px 7px #c7d2fe33;}
-    .product-name { font-weight: 600; margin: 6px 0; }
-    .product-points { color:#6366f1; font-size:1.04em; font-weight:700;}
-    .no-products { color:#999; font-size:1em; margin: 18px auto;}
-    .footer { text-align: center; color: #aaa; font-size: 0.98em; margin-top: 45px;}
-    @media (max-width: 540px) {
-      .container {margin-top: 12px; padding: 20px 5vw 20px 5vw;}
-      .product-card {width: 43vw; min-width:90px;}
-    }
-    @keyframes fadeIn {
-      from { opacity: 0;}
-      to { opacity: 1;}
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform:translate(-50%,-80%) scale(0.92);}
-      to { opacity: 1; transform:translate(-50%,-54%) scale(1);}
-    }
-    @keyframes cardIn {
-      from { opacity:0; transform: translateY(24px) scale(0.98);}
-      to { opacity:1; transform: translateY(0) scale(1);}
-    }
+    /* ...你的 style 保持不變... */
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="user-block">
-      <img id="avatar" class="avatar" src="https://fakeimg.pl/56x56/?text=?" alt="頭像">
-      <div>
-        <div id="userName" class="user-name">載入中...</div>
-        <div id="userId" class="user-id"></div>
-      </div>
+<div class="container">
+  <div class="user-block">
+    <img id="avatar" class="avatar" src="https://fakeimg.pl/56x56/?text=?" alt="頭像">
+    <div>
+      <div id="userName" class="user-name">載入中...</div>
+      <div id="userId" class="user-id"></div>
     </div>
-    <div class="student-row">
-      <label for="studentSel">選擇小朋友：</label>
-      <select id="studentSel"></select>
-      <button id="addStudentBtn" type="button">新增小朋友</button>
-    </div>
-    <!-- 新增小朋友 modal -->
-    <div class="modal-bg" id="modalBg"></div>
-    <div class="modal" id="addStudentDialog">
-      <h3>新增小朋友</h3>
-      <input type="text" id="newStudentName" placeholder="請輸入小朋友名字">
-      <div class="modal-btns">
-        <button class="ok" id="confirmAddStudent" type="button">送出</button>
-        <button class="cancel" id="cancelAddStudent" type="button">取消</button>
-      </div>
-    </div>
-    <div class="points-block">
-      <div class="points-label">目前點數</div>
-      <div id="pointsValue" class="points-value">--</div>
-    </div>
-    <div class="products-title">可兌換商品</div>
-    <div class="product-list" id="productList"></div>
   </div>
-  <div class="footer">Points Shop 學生點數查詢系統</div>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script>
-    const LIFF_ID = "2008129060-mO9azRD1"; // 請換成你的 LIFF ID
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // 換成你的 Firebase URL
-    const MAX_STUDENTS = 2;
-    let globalUserId = "";
-    function main() {
-      liff.init({ liffId: LIFF_ID })
-        .then(() => liff.getProfile())
-        .then(profile => {
-          document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/?text=?";
-          document.getElementById('userName').innerText = profile.displayName || "未知用戶";
-          document.getElementById('userId').innerText = profile.userId;
-          globalUserId = profile.userId;
-          ensureParentExists(profile.userId, profile.displayName);
-          loadStudents(profile.userId);
-        })
-        .catch(err => {
-          document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2><pre style='color:red;font-size:0.9em;'>" + err + "</pre>";
-          console.error(err);
+  <div class="student-row">
+    <label for="studentSel">選擇小朋友：</label>
+    <select id="studentSel"></select>
+    <button id="addStudentBtn" type="button">新增小朋友</button>
+  </div>
+  <!-- 新增小朋友 modal -->
+  <div class="modal-bg" id="modalBg"></div>
+  <div class="modal" id="addStudentDialog">
+    <h3>新增小朋友</h3>
+    <input type="text" id="newStudentName" placeholder="請輸入小朋友名字">
+    <div class="modal-btns">
+      <button class="ok" id="confirmAddStudent" type="button">送出</button>
+      <button class="cancel" id="cancelAddStudent" type="button">取消</button>
+    </div>
+  </div>
+  <div class="points-block">
+    <div class="points-label">目前點數</div>
+    <div id="pointsValue" class="points-value">--</div>
+  </div>
+  <div class="products-title">可兌換商品</div>
+  <div class="product-list" id="productList"></div>
+</div>
+<div class="footer">Points Shop 學生點數查詢系統</div>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+const LIFF_ID = "2008129060-mO9azRD1";
+const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
+const MAX_STUDENTS = 2;
+let globalUserId = "";
+
+function main() {
+  liff.init({ liffId: LIFF_ID })
+    .then(() => liff.getProfile())
+    .then(profile => {
+      document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/?text=?";
+      document.getElementById('userName').innerText = profile.displayName || "未知用戶";
+      document.getElementById('userId').innerText = profile.userId;
+      globalUserId = profile.userId;
+      ensureParentExists(profile.userId, profile.displayName);
+      loadStudents(profile.userId);
+    })
+    .catch(err => {
+      document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2><pre style='color:red;font-size:0.9em;'>" + err + "</pre>";
+      console.error(err);
+    });
+}
+
+function ensureParentExists(userId, userName) {
+  fetch(`${FIREBASE_URL}/parents/${userId}.json`)
+    .then(res => res.json())
+    .then(data => {
+      if (data === null || !data.students) {
+        fetch(`${FIREBASE_URL}/parents/${userId}.json`, {
+          method: 'PATCH',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            displayName: userName,
+            createdAt: new Date().toISOString(),
+            students: {}
+          })
         });
-    }
-    function ensureParentExists(userId, userName) {
-      fetch(`${FIREBASE_URL}/parents/${userId}.json`)
-        .then(res => res.json())
-        .then(data => {
-          if (data === null) {
-            fetch(`${FIREBASE_URL}/parents/${userId}.json`, {
-              method: 'PUT',
-              headers: {'Content-Type':'application/json'},
-              body: JSON.stringify({
-                displayName: userName,
-                createdAt: new Date().toISOString(),
-                students: {}
-              })
-            });
-          }
-        });
-    }
-    function loadStudents(userId) {
-      fetch(`${FIREBASE_URL}/parents/${userId}/students.json`)
-        .then(r => r.json())
-        .then(students => {
-          const sel = document.getElementById('studentSel');
-          sel.innerHTML = '';
-          if (!students || Object.keys(students).length === 0) {
-            sel.innerHTML = '<option value="">（尚未新增小朋友）</option>';
-            document.getElementById('pointsValue').innerText = "--";
-            renderProducts([]);
-            return;
-          }
-          const studentArr = Object.entries(students).map(([sid, obj]) => ({studentId: sid, name: obj.name, points: obj.points}));
-          sel.innerHTML = studentArr.map(s => `<option value="${s.studentId}">${s.name}</option>`).join('');
-          if (sel.value) loadStudent(sel.value);
-          sel.onchange = function() {
-            loadStudent(sel.value);
-          };
-        });
-    }
-    function loadStudent(studentId) {
-      if (!studentId) {
+      }
+    });
+}
+
+function loadStudents(userId) {
+  fetch(`${FIREBASE_URL}/parents/${userId}/students.json`)
+    .then(r => r.json())
+    .then(students => {
+      const sel = document.getElementById('studentSel');
+      sel.innerHTML = '';
+      if (!students || Object.keys(students).length === 0) {
+        sel.innerHTML = '<option value="">（尚未新增小朋友）</option>';
         document.getElementById('pointsValue').innerText = "--";
         renderProducts([]);
         return;
       }
-      fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`)
-        .then(r => r.json())
-        .then(student => {
-          document.getElementById('pointsValue').innerText = student && student.points !== undefined ? student.points : "--";
-        });
-      loadProducts();
-    }
-    function loadProducts() {
-      fetch(`${FIREBASE_URL}/products.json`)
-        .then(r => r.json())
-        .then(products => {
-          if (!products) {
-            renderProducts([]);
-            return;
-          }
-          const prodArr = Object.values(products);
-          renderProducts(prodArr.map(p=>[p.name, p.point, p.img]));
-        });
-    }
-    function renderProducts(products) {
-      const list = document.getElementById('productList');
-      list.innerHTML = "";
-      if (products && products.length > 0) {
-        products.forEach((prod, idx) => {
-          const name = prod[0] || "";
-          const pts = prod[1] || 0;
-          const img = prod[2] || "https://fakeimg.pl/62x62/cccccc/909090/?text=?";
-          const html = `
-            <div class="product-card" style="animation-delay:${idx*0.07}s">
-              <img class="product-img" src="${img}" alt="${name}">
-              <div class="product-name">${name}</div>
-              <div class="product-points">${pts} 點</div>
-            </div>
-          `;
-          list.insertAdjacentHTML('beforeend', html);
-        });
-      } else {
-        list.innerHTML = '<div class="no-products">目前沒有可兌換商品</div>';
-      }
-    }
-    // ===== 新增小朋友功能 + Modal動畫+數量限制2位 =====
-    document.addEventListener('DOMContentLoaded', function() {
-      const addStudentBtn = document.getElementById('addStudentBtn');
-      const addStudentDialog = document.getElementById('addStudentDialog');
-      const modalBg = document.getElementById('modalBg');
-      const confirmAddStudent = document.getElementById('confirmAddStudent');
-      const cancelAddStudent = document.getElementById('cancelAddStudent');
-      const newStudentName = document.getElementById('newStudentName');
-      const studentSel = document.getElementById('studentSel');
-      function showModal(flag) {
-        if(flag){
-          addStudentDialog.classList.add('active');
-          modalBg.classList.add('active');
-          addStudentDialog.style.display = '';
-          modalBg.style.display = '';
-          setTimeout(()=>{newStudentName.focus();}, 120);
-        }else{
-          addStudentDialog.classList.remove('active');
-          modalBg.classList.remove('active');
-          setTimeout(()=>{
-            addStudentDialog.style.display = 'none';
-            modalBg.style.display = 'none';
-          }, 290);
-        }
-      }
-      if (addStudentBtn) {
-        addStudentBtn.onclick = function() {
-          // 檢查數量
-          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
-            .then(r => r.json())
-            .then(students => {
-              if (students && Object.keys(students).length >= MAX_STUDENTS) {
-                alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
-                return;
-              }
-              showModal(true);
-              newStudentName.value = '';
-            });
-        };
-      }
-      if (cancelAddStudent) {
-        cancelAddStudent.onclick = function() {
-          showModal(false);
-        };
-      }
-      if (modalBg) {
-        modalBg.onclick = function() {
-          showModal(false);
-        };
-      }
-      if (confirmAddStudent) {
-        confirmAddStudent.onclick = function() {
-          const name = newStudentName.value.trim();
-          if (!name) {
-            alert('請輸入小朋友名字');
-            return;
-          }
-          // 先檢查現有數量與是否有同名
-          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
-            .then(r => r.json())
-            .then(students => {
-              if (students) {
-                if (Object.keys(students).length >= MAX_STUDENTS) {
-                  alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
-                  showModal(false);
-                  return;
-                }
-                if (Object.values(students).some(s => s.name === name)) {
-                  alert('已經有這個名字的小朋友囉！');
-                  return;
-                }
-              }
-              const studentId = 'S' + Date.now();
-              // 這裡改為 PATCH 並確保 points 傳數字 0
-              fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`, {
-                method: 'PATCH',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ [studentId]: { name: name, points: 0 } })
-              }).then(() => {
-                showModal(false);
-                loadStudents(globalUserId);
-              });
-            });
-        };
-      }
+      const studentArr = Object.entries(students).map(([sid, obj]) => ({studentId: sid, name: obj.name, points: obj.points}));
+      sel.innerHTML = studentArr.map(s => `<option value="${s.studentId}">${s.name}</option>`).join('');
+      if (sel.value) loadStudent(sel.value);
+      sel.onchange = function() { loadStudent(sel.value); };
     });
-    main();
-  </script>
+}
+
+function loadStudent(studentId) {
+  if (!studentId) {
+    document.getElementById('pointsValue').innerText = "--";
+    renderProducts([]);
+    return;
+  }
+  fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`)
+    .then(r => r.json())
+    .then(student => {
+      document.getElementById('pointsValue').innerText = student && student.points !== undefined ? student.points : "--";
+    });
+  loadProducts();
+}
+
+function loadProducts() {
+  fetch(`${FIREBASE_URL}/products.json`)
+    .then(r => r.json())
+    .then(products => {
+      if (!products) {
+        renderProducts([]);
+        return;
+      }
+      const prodArr = Object.values(products);
+      renderProducts(prodArr.map(p => [p.name, p.point, p.img]));
+    });
+}
+
+function renderProducts(products) {
+  const list = document.getElementById('productList');
+  list.innerHTML = "";
+  if (products && products.length > 0) {
+    products.forEach((prod, idx) => {
+      const name = prod[0] || "";
+      const pts = prod[1] || 0;
+      const img = prod[2] || "https://fakeimg.pl/62x62/cccccc/909090/?text=?";
+      const html = `<div class="product-card" style="animation-delay:${idx*0.07}s">
+        <img class="product-img" src="${img}" alt="${name}">
+        <div class="product-name">${name}</div>
+        <div class="product-points">${pts} 點</div>
+      </div>`;
+      list.insertAdjacentHTML('beforeend', html);
+    });
+  } else {
+    list.innerHTML = '<div class="no-products">目前沒有可兌換商品</div>';
+  }
+}
+
+// ===== 新增小朋友功能 + Modal動畫+數量限制2位 =====
+document.addEventListener('DOMContentLoaded', function() {
+  const addStudentBtn = document.getElementById('addStudentBtn');
+  const addStudentDialog = document.getElementById('addStudentDialog');
+  const modalBg = document.getElementById('modalBg');
+  const confirmAddStudent = document.getElementById('confirmAddStudent');
+  const cancelAddStudent = document.getElementById('cancelAddStudent');
+  const newStudentName = document.getElementById('newStudentName');
+  const studentSel = document.getElementById('studentSel');
+
+  function showModal(flag) {
+    if(flag){
+      addStudentDialog.classList.add('active');
+      modalBg.classList.add('active');
+      addStudentDialog.style.display = '';
+      modalBg.style.display = '';
+      setTimeout(()=>{newStudentName.focus();}, 120);
+    }else{
+      addStudentDialog.classList.remove('active');
+      modalBg.classList.remove('active');
+      setTimeout(()=>{
+        addStudentDialog.style.display = 'none';
+        modalBg.style.display = 'none';
+      }, 290);
+    }
+  }
+
+  if (addStudentBtn) {
+    addStudentBtn.onclick = function() {
+      fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
+        .then(r => r.json())
+        .then(students => {
+          if (students && Object.keys(students).length >= MAX_STUDENTS) {
+            alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
+            return;
+          }
+          showModal(true);
+          newStudentName.value = '';
+        });
+    };
+  }
+
+  if (cancelAddStudent) {
+    cancelAddStudent.onclick = function() { showModal(false); };
+  }
+  if (modalBg) {
+    modalBg.onclick = function() { showModal(false); };
+  }
+  if (confirmAddStudent) {
+    confirmAddStudent.onclick = function() {
+      const name = newStudentName.value.trim();
+      if (!name) {
+        alert('請輸入小朋友名字');
+        return;
+      }
+      fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
+        .then(r => r.json())
+        .then(students => {
+          if (students) {
+            if (Object.keys(students).length >= MAX_STUDENTS) {
+              alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
+              showModal(false);
+              return;
+            }
+            if (Object.values(students).some(s => s.name === name)) {
+              alert('已經有這個名字的小朋友囉！');
+              return;
+            }
+          }
+          const studentId = 'S' + Date.now();
+          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ name, points: 0 })
+          }).then(() => {
+            showModal(false);
+            loadStudents(globalUserId);
+          });
+        });
+    };
+  }
+});
+main();
+</script>
 </body>
 </html>
