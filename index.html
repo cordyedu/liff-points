@@ -7,7 +7,7 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Rubik:wght@700&display=swap" rel="stylesheet">
   <style>
-:root {
+    :root {
   --main-purple: #7c4dff;
   --main-blue: #6ebdff;
   --bg-gradient: linear-gradient(135deg, #ede7ff 0%, #f3f7fa 100%);
@@ -383,10 +383,11 @@ body {
   .record-table th,.record-table td{font-size:0.97em;}
 }
 @keyframes fadeInUp {from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: translateY(0);}}
+    @keyframes fadeInUp {from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: translateY(0);}}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="mainContainer">
     <div class="logo-title" id="logoTitle">Points Shop 學生積分兌換系統</div>
     <div id="liffProfileBlock" style="display:none;text-align:center;margin-bottom:12px;">
       <img id="liffProfileImg" src="" style="width:48px;height:48px;border-radius:50%;vertical-align:middle;background:#efefef;margin-right:10px;">
@@ -440,12 +441,47 @@ body {
   <div class="footer">Points Shop 學生積分兌換全功能版</div>
   <script>
     // ====== 設定區 ======
-    const LIFF_ID = "2008129060-mO9azRD1"; // <<<<<<<<<<< 換成你的 LIFF ID
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // <<<< 換成你的 Firebase Database URL（不用 / 結尾）
-    const TEST_USER_ID = "YOUR_PARENT_ID"; // <<<< 換成你自己的家長ID
+    const LIFF_ID = "2008129060-mO9azRD1"; // 換成你的 LIFF ID
+    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // 換成你的 Firebase Database URL
+    // const TEST_USER_ID = "YOUR_PARENT_ID"; // 這行不用了
 
-    // ====== LINE LIFF 初始化 ======
+    // ====== LINE LIFF + 審核邏輯 ======
     let lineProfile = null;
+    function showPendingMsg(displayName) {
+      document.getElementById('mainContainer').innerHTML = `
+        <div style="padding:40px 0;text-align:center;">
+          <div style="font-size:2em;margin-bottom:18px;color:#7c4dff;">歡迎 ${displayName || ""}</div>
+          <div style="font-size:1.2em;color:#aaa;">您的帳號已送出申請<br>請等待老師審核開通</div>
+        </div>
+      `;
+    }
+    function checkParentAndInit(parentId, profile) {
+      fetch(`${FIREBASE_URL}/parents/${parentId}.json`)
+        .then(r => r.json())
+        .then(parent => {
+          if (parent && parent.students && Object.keys(parent.students).length > 0) {
+            students = parent.students;
+            showApproved(parent);
+          } else {
+            // 尚未審核，寫入pending
+            fetch(`${FIREBASE_URL}/pending_parents/${parentId}.json`)
+              .then(r => r.json())
+              .then(pending => {
+                if (!pending) {
+                  fetch(`${FIREBASE_URL}/pending_parents/${parentId}.json`, {
+                    method: "PUT",
+                    body: JSON.stringify({
+                      displayName: profile.displayName,
+                      pictureUrl: profile.pictureUrl,
+                      requestTime: Date.now()
+                    })
+                  });
+                }
+              });
+            showPendingMsg(profile.displayName);
+          }
+        });
+    }
     function initLIFF() {
       if (!window.liff) return;
       liff.init({ liffId: LIFF_ID })
@@ -453,11 +489,10 @@ body {
           if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
               lineProfile = profile;
-              // 顯示 LINE 名稱與頭像
               document.getElementById('liffProfileBlock').style.display = '';
               document.getElementById('liffProfileName').innerText = profile.displayName;
               document.getElementById('liffProfileImg').src = profile.pictureUrl || '';
-              // 你可在這裡自動對應學生帳號（進階綁定）
+              checkParentAndInit(profile.userId, profile);
             });
           } else {
             liff.login();
@@ -468,7 +503,7 @@ body {
         });
     }
 
-    // ====== 功能主程式區 ======
+    // ====== 原本主功能區 ======
     const productTiers = [
       { key: "tier1", title: "50 點以內",     min: -Infinity, max: 50 },
       { key: "tier2", title: "51 ~ 100 點",   min: 51, max: 100 },
@@ -486,22 +521,6 @@ body {
     let allProductsMap = {};
     let redeeming = false;
 
-    function loadParent(userId) {
-      fetch(`${FIREBASE_URL}/parents/${userId}.json`)
-        .then(r => r.json())
-        .then(parent => {
-          if (!parent || !parent.students || Object.keys(parent.students).length === 0) {
-            alert("找不到學生資料，請檢查 userId 及資料庫內容！");
-            return;
-          }
-          students = parent.students;
-          showApproved(parent);
-        })
-        .catch(err => {
-          alert('連線失敗，請稍後再試');
-          console.error(err);
-        });
-    }
     function showApproved(parent) {
       const selectorBlock = document.getElementById('studentSelectorBlock');
       const selector = document.getElementById('studentSelector');
@@ -736,13 +755,11 @@ body {
     document.getElementById('productSearch').addEventListener('input', renderProductSections);
     document.getElementById('productSort').addEventListener('change', renderProductSections);
 
-    // ====== 啟動 LIFF 與系統 ======
+    // ====== 啟動 ======
     window.addEventListener("DOMContentLoaded", function() {
       if (window.liff) initLIFF();
       clearProductSections();
-      loadParent(TEST_USER_ID);
     });
   </script>
 </body>
 </html>
-
