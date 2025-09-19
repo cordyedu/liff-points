@@ -4,234 +4,215 @@
   <meta charset="UTF-8">
   <title>學生點數查詢</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    /* ...你的 style 保持不變... */
+    body {
+      background: linear-gradient(135deg, #e0e7ff, #fef6fa 70%);
+      font-family: 'Noto Sans TC', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #222;
+    }
+    .container {
+      max-width: 400px;
+      margin: 40px auto 0 auto;
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+      border-radius: 18px;
+      padding: 32px 24px 28px 24px;
+    }
+    .user-block {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #96a6e1;
+      object-fit: cover;
+      background: #e0e7ff;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-name {
+      font-size: 1.18em;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .user-id {
+      font-size: 0.9em;
+      color: #888;
+      word-break: break-all;
+    }
+    .points-block {
+      background: linear-gradient(90deg, #a0c4ff 60%, #bdb2ff 100%);
+      border-radius: 8px;
+      padding: 18px 0 12px 0;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #222;
+    }
+    .points-label {
+      font-size: 1.08em;
+      margin-bottom: 4px;
+    }
+    .points-value {
+      font-size: 2.4em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #3b4d82;
+    }
+    .products-title {
+      font-size: 1.1em;
+      font-weight: 700;
+      margin: 14px 0 10px 0;
+      letter-spacing: 1px;
+    }
+    .product-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+    .product-card {
+      background: #f4f3ff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px 0 rgba(145, 136, 255, 0.07);
+      width: 135px;
+      text-align: center;
+      padding: 14px 10px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s;
+    }
+    .product-card:hover {
+      box-shadow: 0 4px 16px 0 rgba(145, 136, 255, 0.17);
+    }
+    .product-img {
+      width: 62px;
+      height: 62px;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 8px;
+      background: #dde3f9;
+      border: 1.5px solid #bdb2ff;
+    }
+    .product-name {
+      font-size: 1em;
+      font-weight: 600;
+      margin-bottom: 3px;
+      color: #4b4a86;
+      letter-spacing: 0.5px;
+      min-height: 1.1em;
+    }
+    .product-points {
+      font-size: 0.97em;
+      color: #7c73c0;
+      font-weight: 600;
+    }
+    .footer {
+      margin: 32px 0 10px 0;
+      text-align: center;
+      color: #aaa;
+      font-size: 0.95em;
+    }
+    @media (max-width: 520px) {
+      .container {
+        margin: 14px 4px 0 4px;
+        padding: 18px 4vw 18px 4vw;
+        max-width: 98vw;
+      }
+      .product-card {
+        width: 46vw;
+        min-width: 124px;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="user-block">
-    <img id="avatar" class="avatar" src="https://fakeimg.pl/56x56/?text=?" alt="頭像">
-    <div>
-      <div id="userName" class="user-name">載入中...</div>
-      <div id="userId" class="user-id"></div>
+  <div class="container">
+    <div class="user-block">
+      <img id="avatar" class="avatar" src="https://fakeimg.pl/56x56/cccccc/909090/?text=?" alt="頭像">
+      <div class="user-info">
+        <div id="userName" class="user-name">載入中...</div>
+        <div id="userId" class="user-id"></div>
+      </div>
     </div>
-  </div>
-  <div class="student-row">
-    <label for="studentSel">選擇小朋友：</label>
-    <select id="studentSel"></select>
-    <button id="addStudentBtn" type="button">新增小朋友</button>
-  </div>
-  <!-- 新增小朋友 modal -->
-  <div class="modal-bg" id="modalBg"></div>
-  <div class="modal" id="addStudentDialog">
-    <h3>新增小朋友</h3>
-    <input type="text" id="newStudentName" placeholder="請輸入小朋友名字">
-    <div class="modal-btns">
-      <button class="ok" id="confirmAddStudent" type="button">送出</button>
-      <button class="cancel" id="cancelAddStudent" type="button">取消</button>
+    <div class="points-block">
+      <div class="points-label">目前點數</div>
+      <div id="pointsValue" class="points-value">--</div>
     </div>
+    <div class="products-title">可兌換商品</div>
+    <div class="product-list" id="productList"></div>
   </div>
-  <div class="points-block">
-    <div class="points-label">目前點數</div>
-    <div id="pointsValue" class="points-value">--</div>
-  </div>
-  <div class="products-title">可兌換商品</div>
-  <div class="product-list" id="productList"></div>
-</div>
-<div class="footer">Points Shop 學生點數查詢系統</div>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script>
-const LIFF_ID = "2008129060-mO9azRD1";
-const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
-const MAX_STUDENTS = 2;
-let globalUserId = "";
+  <div class="footer">Points Shop 學生點數查詢系統</div>
 
-function main() {
-  liff.init({ liffId: LIFF_ID })
-    .then(() => liff.getProfile())
-    .then(profile => {
-      document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/?text=?";
-      document.getElementById('userName').innerText = profile.displayName || "未知用戶";
-      document.getElementById('userId').innerText = profile.userId;
-      globalUserId = profile.userId;
-      ensureParentExists(profile.userId, profile.displayName);
-      loadStudents(profile.userId);
-    })
-    .catch(err => {
-      document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2><pre style='color:red;font-size:0.9em;'>" + err + "</pre>";
-      console.error(err);
-    });
-}
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    // ==== 請填入你的 LIFF ID 與 Apps Script API 網址 ====
+    const LIFF_ID = "你的LIFF_ID";
+    const API_URL = "https://script.google.com/macros/s/你的ID/exec";
 
-function ensureParentExists(userId, userName) {
-  fetch(`${FIREBASE_URL}/parents/${userId}.json`)
-    .then(res => res.json())
-    .then(data => {
-      if (data === null || !data.students) {
-        fetch(`${FIREBASE_URL}/parents/${userId}.json`, {
-          method: 'PATCH',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            displayName: userName,
-            createdAt: new Date().toISOString(),
-            students: {}
-          })
+    // 初始化 LIFF
+    function main() {
+      liff.init({ liffId: LIFF_ID })
+        .then(() => liff.getProfile())
+        .then(profile => {
+          // 顯示使用者資訊
+          document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/cccccc/909090/?text=?";
+          document.getElementById('userName').innerText = profile.displayName || "未知用戶";
+          document.getElementById('userId').innerText = profile.userId;
+
+          // 傳 userId & name 給後端，並取得點數與商品
+          fetch(`${API_URL}?userId=${profile.userId}&name=${encodeURIComponent(profile.displayName)}`)
+            .then(res => res.json())
+            .then(data => {
+              document.getElementById('pointsValue').innerText = data.points;
+              renderProducts(data.products || []);
+            })
+            .catch(err => {
+              document.getElementById('pointsValue').innerText = "錯誤";
+              renderProducts([]);
+            });
+        })
+        .catch(err => {
+          document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2>";
+          console.error(err);
         });
-      }
-    });
-}
-
-function loadStudents(userId) {
-  fetch(`${FIREBASE_URL}/parents/${userId}/students.json`)
-    .then(r => r.json())
-    .then(students => {
-      const sel = document.getElementById('studentSel');
-      sel.innerHTML = '';
-      if (!students || Object.keys(students).length === 0) {
-        sel.innerHTML = '<option value="">（尚未新增小朋友）</option>';
-        document.getElementById('pointsValue').innerText = "--";
-        renderProducts([]);
-        return;
-      }
-      const studentArr = Object.entries(students).map(([sid, obj]) => ({studentId: sid, name: obj.name, points: obj.points}));
-      sel.innerHTML = studentArr.map(s => `<option value="${s.studentId}">${s.name}</option>`).join('');
-      if (sel.value) loadStudent(sel.value);
-      sel.onchange = function() { loadStudent(sel.value); };
-    });
-}
-
-function loadStudent(studentId) {
-  if (!studentId) {
-    document.getElementById('pointsValue').innerText = "--";
-    renderProducts([]);
-    return;
-  }
-  fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`)
-    .then(r => r.json())
-    .then(student => {
-      document.getElementById('pointsValue').innerText = student && student.points !== undefined ? student.points : "--";
-    });
-  loadProducts();
-}
-
-function loadProducts() {
-  fetch(`${FIREBASE_URL}/products.json`)
-    .then(r => r.json())
-    .then(products => {
-      if (!products) {
-        renderProducts([]);
-        return;
-      }
-      const prodArr = Object.values(products);
-      renderProducts(prodArr.map(p => [p.name, p.point, p.img]));
-    });
-}
-
-function renderProducts(products) {
-  const list = document.getElementById('productList');
-  list.innerHTML = "";
-  if (products && products.length > 0) {
-    products.forEach((prod, idx) => {
-      const name = prod[0] || "";
-      const pts = prod[1] || 0;
-      const img = prod[2] || "https://fakeimg.pl/62x62/cccccc/909090/?text=?";
-      const html = `<div class="product-card" style="animation-delay:${idx*0.07}s">
-        <img class="product-img" src="${img}" alt="${name}">
-        <div class="product-name">${name}</div>
-        <div class="product-points">${pts} 點</div>
-      </div>`;
-      list.insertAdjacentHTML('beforeend', html);
-    });
-  } else {
-    list.innerHTML = '<div class="no-products">目前沒有可兌換商品</div>';
-  }
-}
-
-// ===== 新增小朋友功能 + Modal動畫+數量限制2位 =====
-document.addEventListener('DOMContentLoaded', function() {
-  const addStudentBtn = document.getElementById('addStudentBtn');
-  const addStudentDialog = document.getElementById('addStudentDialog');
-  const modalBg = document.getElementById('modalBg');
-  const confirmAddStudent = document.getElementById('confirmAddStudent');
-  const cancelAddStudent = document.getElementById('cancelAddStudent');
-  const newStudentName = document.getElementById('newStudentName');
-  const studentSel = document.getElementById('studentSel');
-
-  function showModal(flag) {
-    if(flag){
-      addStudentDialog.classList.add('active');
-      modalBg.classList.add('active');
-      addStudentDialog.style.display = '';
-      modalBg.style.display = '';
-      setTimeout(()=>{newStudentName.focus();}, 120);
-    }else{
-      addStudentDialog.classList.remove('active');
-      modalBg.classList.remove('active');
-      setTimeout(()=>{
-        addStudentDialog.style.display = 'none';
-        modalBg.style.display = 'none';
-      }, 290);
     }
-  }
 
-  if (addStudentBtn) {
-    addStudentBtn.onclick = function() {
-      fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
-        .then(r => r.json())
-        .then(students => {
-          if (students && Object.keys(students).length >= MAX_STUDENTS) {
-            alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
-            return;
-          }
-          showModal(true);
-          newStudentName.value = '';
+    // 渲染商品清單
+    function renderProducts(products) {
+      const list = document.getElementById('productList');
+      list.innerHTML = "";
+      if (products && products.length > 0) {
+        products.forEach(prod => {
+          // 支援格式：[商品名, 點數, 圖片網址]
+          const name = prod[0] || "";
+          const pts = prod[1] || 0;
+          const img = prod[2] || "https://fakeimg.pl/62x62/cccccc/909090/?text=?";
+          const html = `
+            <div class="product-card">
+              <img class="product-img" src="${img}" alt="${name}">
+              <div class="product-name">${name}</div>
+              <div class="product-points">${pts} 點</div>
+            </div>
+          `;
+          list.insertAdjacentHTML('beforeend', html);
         });
-    };
-  }
-
-  if (cancelAddStudent) {
-    cancelAddStudent.onclick = function() { showModal(false); };
-  }
-  if (modalBg) {
-    modalBg.onclick = function() { showModal(false); };
-  }
-  if (confirmAddStudent) {
-    confirmAddStudent.onclick = function() {
-      const name = newStudentName.value.trim();
-      if (!name) {
-        alert('請輸入小朋友名字');
-        return;
+      } else {
+        list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
       }
-      fetch(`${FIREBASE_URL}/parents/${globalUserId}/students.json`)
-        .then(r => r.json())
-        .then(students => {
-          if (students) {
-            if (Object.keys(students).length >= MAX_STUDENTS) {
-              alert('每位家長最多只能新增' + MAX_STUDENTS + '位小朋友！');
-              showModal(false);
-              return;
-            }
-            if (Object.values(students).some(s => s.name === name)) {
-              alert('已經有這個名字的小朋友囉！');
-              return;
-            }
-          }
-          const studentId = 'S' + Date.now();
-          fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
-            method: 'PUT',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ name, points: 0 })
-          }).then(() => {
-            showModal(false);
-            loadStudents(globalUserId);
-          });
-        });
-    };
-  }
-});
-main();
-</script>
+    }
+
+    main();
+  </script>
 </body>
 </html>
