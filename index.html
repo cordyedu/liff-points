@@ -5,7 +5,11 @@
   <title>學生點數查詢</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body { font-family: 'Noto Sans TC', sans-serif; background: radial-gradient(circle at 50% 0%, #dad4ff 0%, #f3f4f6 100%); }
+    body { 
+      font-family: 'Noto Sans TC', sans-serif; 
+      background: radial-gradient(circle at 50% 0%, #dad4ff 0%, #f3f4f6 100%);
+      min-height:100vh;
+    }
     .container { 
       max-width: 430px; margin: 40px auto 0; 
       background: #fff; border-radius: 22px; 
@@ -122,36 +126,16 @@
       font-size: 1em;
       margin-right: 2px;
       opacity: 0.75;
-    }
-    .product-label {
-      position: absolute;
-      top: 14px;
-      right: 13px;
-      background: linear-gradient(90deg,#ffb800 60%,#ffd580 100%);
-      color: #fff;
-      font-size: 0.92em;
-      font-weight: bold;
-      border-radius: 8px;
-      padding: 4px 14px;
-      box-shadow: 0 2px 10px #ffd58033;
-      letter-spacing: 0.5px;
-      animation: labelFadeIn 0.7s;
+      animation: sparkle 1.8s infinite cubic-bezier(.28,.63,.46,.96);
     }
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(40px);}
       to { opacity: 1; transform: translateY(0);}
     }
-    @keyframes labelFadeIn {
-      from { opacity: 0; transform: scale(0.7);}
-      to { opacity: 1; transform: scale(1);}
-    }
     @keyframes sparkle {
       0%,100%{ color: #ffb800;}
       40%{ color: #7a5cff;}
       70%{ color: #ff80c0;}
-    }
-    .product-points:before {
-      animation: sparkle 1.8s infinite cubic-bezier(.28,.63,.46,.96);
     }
     .product-card .shine {
       position: absolute;
@@ -173,33 +157,6 @@
     #addStudentDialog {margin-bottom: 10px;}
     #addStudentDialog input { padding: 6px; border-radius: 5px; border: 1px solid #bbb; }
     #addStudentDialog button { margin-left: 6px; }
-    #studentSelector label {
-      color:#7a5cff; font-weight:600; margin-right:8px; letter-spacing:1px;
-    }
-    #addStudentBtn {
-      background: linear-gradient(90deg,#dacfff 60%,#fff6c0 100%);
-      color: #6d5aaf;
-      font-weight: 600;
-      border: 1px solid #b1a0ff;
-      border-radius: 7px;
-      padding: 6px 10px;
-      transition: all 0.12s;
-      box-shadow: 0 1.5px 7px #dacfff33;
-      cursor: pointer;
-      outline: none;
-    }
-    #addStudentBtn:active {
-      background: linear-gradient(90deg,#ffde80 60%,#dacfff 100%);
-      color: #a97cff;
-      border: 1px solid #ffb800;
-    }
-    #addStudentBtn[disabled] {
-      background: #eee;
-      color: #bbb;
-      border: 1px solid #ccc;
-      cursor: not-allowed;
-    }
-    #addStudentDialog input:focus { border: 1.5px solid #7a5cff; }
   </style>
 </head>
 <body>
@@ -234,10 +191,10 @@
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     // 設定你的 LIFF ID 跟 Firebase DB 網址
-    const LIFF_ID = "2008129060-mO9azRD1";
-    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const LIFF_ID = "2008129060-mO9azRD1"; // <<<<<<< 請換成你自己的 LIFF ID
+    const FIREBASE_URL = "https://points-shop-47c10-default-rtdb.asia-southeast1.firebasedatabase.app"; // <<<<<<< 換成你的 Firebase 網址
+
     let globalUserId = "";
-    let currentStudentCount = 0;
 
     function main() {
       liff.init({ liffId: LIFF_ID })
@@ -256,6 +213,7 @@
         });
     }
 
+    // 若家長資料不存在則自動建立
     function ensureParentExists(userId, userName) {
       fetch(`${FIREBASE_URL}/parents/${userId}.json`)
         .then(res => res.json())
@@ -279,29 +237,15 @@
         .then(r => r.json())
         .then(students => {
           if (!students || Object.keys(students).length === 0) {
-            currentStudentCount = 0;
             document.getElementById('studentSelector').style.display = '';
             document.getElementById('studentSel').innerHTML = '<option value="">（尚未新增小朋友）</option>';
             document.getElementById('pointsValue').innerText = "--";
-            updateAddStudentBtn();
             renderProducts([]);
             return;
           }
           const studentArr = Object.entries(students).map(([sid, obj]) => ({studentId: sid, name: obj.name, points: obj.points}));
-          currentStudentCount = studentArr.length;
           showStudentSelector(studentArr);
         });
-    }
-
-    function updateAddStudentBtn() {
-      const addBtn = document.getElementById('addStudentBtn');
-      if (currentStudentCount >= 2) {
-        addBtn.disabled = true;
-        addBtn.title = "最多只能新增兩位小朋友";
-      } else {
-        addBtn.disabled = false;
-        addBtn.title = "";
-      }
     }
 
     function showStudentSelector(students) {
@@ -309,14 +253,13 @@
       const sel = document.getElementById('studentSel');
       sel.innerHTML = students.map(s => `<option value="${s.studentId}">${s.name}</option>`).join('');
       selDiv.style.display = '';
-      updateAddStudentBtn();
       sel.onchange = function() {
         loadStudent(sel.value);
       };
       if (sel.value) {
-        loadStudent(sel.value);
+        loadStudent(sel.value); // 預設載入第一位
       } else if (students.length > 0) {
-        loadStudent(students[0].studentId);
+        loadStudent(students[0].studentId); // fallback
       }
     }
 
@@ -347,23 +290,21 @@
         });
     }
 
-    // 華麗商品卡片渲染
+    // ====== 只美化商品卡片 ======
     function renderProducts(products) {
       const list = document.getElementById('productList');
       list.innerHTML = "";
       if (products && products.length > 0) {
-        products.forEach((prod, idx) => {
+        products.forEach(prod => {
           const name = prod[0] || "";
           const pts = prod[1] || 0;
           const img = prod[2] || "https://fakeimg.pl/100x100/cccccc/909090/?text=?";
-          const isNew = idx < 2;
           const html = `
-            <div class="product-card fade-in">
+            <div class="product-card">
               <div class="shine"></div>
               <img class="product-img" src="${img}" alt="${name}">
               <div class="product-name">${name}</div>
               <div class="product-points">${pts} 點</div>
-              ${isNew ? '<div class="product-label">NEW</div>' : ''}
             </div>
           `;
           list.insertAdjacentHTML('beforeend', html);
@@ -372,7 +313,7 @@
         list.innerHTML = '<div style="color:#999;font-size:1em;margin:18px auto;">目前沒有可兌換商品</div>';
       }
     }
-
+    // ===== 下面完全原樣 =====
     document.addEventListener('DOMContentLoaded', function() {
       const addStudentBtn = document.getElementById('addStudentBtn');
       const addStudentDialog = document.getElementById('addStudentDialog');
@@ -383,10 +324,6 @@
 
       if (addStudentBtn) {
         addStudentBtn.onclick = function() {
-          if (currentStudentCount >= 2) {
-            alert("最多只能新增兩位小朋友");
-            return;
-          }
           addStudentDialog.style.display = '';
           newStudentName.value = '';
           setTimeout(()=>{newStudentName.focus();}, 150);
@@ -399,20 +336,14 @@
       }
       if (confirmAddStudent) {
         confirmAddStudent.onclick = function() {
-          confirmAddStudent.disabled = true; // 防止重複送出
           const name = newStudentName.value.trim();
           if (!name) {
             alert('請輸入小朋友名字');
-            confirmAddStudent.disabled = false;
             return;
           }
-          if (currentStudentCount >= 2) {
-            alert("最多只能新增兩位小朋友");
-            addStudentDialog.style.display = 'none';
-            confirmAddStudent.disabled = false;
-            return;
-          }
+          // 產生唯一ID（用時間戳記）
           const studentId = 'S' + Date.now();
+          // 預設點數 0
           fetch(`${FIREBASE_URL}/parents/${globalUserId}/students/${studentId}.json`, {
             method: 'PUT',
             headers: {'Content-Type':'application/json'},
@@ -422,11 +353,11 @@
             })
           }).then(() => {
             addStudentDialog.style.display = 'none';
-            confirmAddStudent.disabled = false;
-            loadStudents(globalUserId);
+            loadStudents(globalUserId); // 重新載入學生清單
           });
         };
       }
+      // 切換學生時自動更新點數
       if (studentSel) {
         studentSel.onchange = function() {
           loadStudent(studentSel.value);
