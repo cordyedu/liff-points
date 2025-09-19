@@ -55,13 +55,22 @@ let globalUserId = "";
 
 function main() {
   liff.init({ liffId: LIFF_ID })
-    .then(() => liff.getProfile())
-    .then(profile => {
+    .then(async () => {
+      let profile = await liff.getProfile();
+      let userId = profile.userId;
+      if (!userId && liff.getDecodedIDToken) {
+        const decoded = liff.getDecodedIDToken();
+        userId = decoded ? decoded.sub : null;
+      }
+      if (!userId) {
+        document.body.innerHTML = "<h2>無法取得ID，請務必用LINE開啟本頁面</h2>";
+        return;
+      }
       document.getElementById('avatar').src = profile.pictureUrl || "https://fakeimg.pl/56x56/?text=?";
       document.getElementById('userName').innerText = profile.displayName || "未知用戶";
-      document.getElementById('userId').innerText = profile.userId;
-      globalUserId = profile.userId;
-      loadParent(profile.userId, profile.displayName);
+      document.getElementById('userId').innerText = userId;
+      globalUserId = userId;
+      loadParent(userId, profile.displayName);
     })
     .catch(err => {
       document.body.innerHTML = "<h2>發生錯誤，請重新開啟！</h2>";
@@ -69,7 +78,6 @@ function main() {
     });
 }
 
-// 修正版：只在不存在時PUT，失敗會顯示錯誤
 function loadParent(userId, displayName) {
   fetch(`${FIREBASE_URL}/parents/${userId}.json`)
     .then(r => r.json())
