@@ -170,9 +170,10 @@ function showApproved(parent) {
     loadProducts();
   };
 
-  // 若只一位學生則預設選中
-  if (Object.keys(students).length === 1) {
-    selector.selectedIndex = 1;
+  // 修正：有學生時預設自動選第一位
+  const studentKeys = Object.keys(students);
+  if (studentKeys.length > 0) {
+    selector.selectedIndex = 1; // 第一個是「請選擇學生」
     selector.dispatchEvent(new Event('change'));
   }
 }
